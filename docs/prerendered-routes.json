@@ -1,0 +1,18 @@
+{
+  "routes": {
+    "/Agrimartet": {},
+    "/Agrimartet/forgot-password": {},
+    "/Agrimartet/grower": {},
+    "/Agrimartet/grower/change-password": {},
+    "/Agrimartet/grower/profile": {},
+    "/Agrimartet/login": {},
+    "/Agrimartet/manufacturer": {},
+    "/Agrimartet/manufacturer/change-password": {},
+    "/Agrimartet/manufacturer/profile": {},
+    "/Agrimartet/reset-password": {},
+    "/Agrimartet/retailer": {},
+    "/Agrimartet/retailer/change-password": {},
+    "/Agrimartet/retailer/profile": {},
+    "/Agrimartet/unauthorized": {}
+  }
+}

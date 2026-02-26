@@ -173,3 +173,10 @@ storybook-static
 # Temporary folders
 /tmp
 /temp
+
+# =============================================================================
+# GITHUB PAGES DEPLOYMENT
+# =============================================================================
+# The docs folder contains the built app for GitHub Pages hosting
+# DO NOT ignore docs folder - it's required for GitHub Pages
+# !docs/  <-- Keep this commented to include docs in version control
