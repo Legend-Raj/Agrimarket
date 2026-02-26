@@ -12,7 +12,6 @@
 <p align="center">
   <a href="#-features">Features</a> •
   <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-folder-structure">Folder Structure</a> •
   <a href="#-setup-instructions">Setup</a> •
   <a href="#-deployment">Deployment</a>
 </p>
@@ -116,80 +115,6 @@ The platform provides role-based dashboards, event management, product catalogs,
 
 ---
 
-## 📁 Folder Structure
-
-```
-frontend/
-├── 📁 client/                          # Angular application root
-│   ├── 📁 src/
-│   │   ├── 📁 app/
-│   │   │   ├── 📁 core/               # Core functionality
-│   │   │   │   ├── 📁 guards/         # Route guards (auth, role-based)
-│   │   │   │   ├── 📁 interceptors/   # HTTP interceptors
-│   │   │   │   ├── 📁 models/         # TypeScript interfaces/models
-│   │   │   │   ├── 📁 services/       # Business logic services
-│   │   │   │   └── 📁 mock/           # Mock data for development
-│   │   │   │
-│   │   │   ├── 📁 pages/              # Page components
-│   │   │   │   ├── 📁 login/          # Login page
-│   │   │   │   ├── 📁 forgot-password/# Password recovery
-│   │   │   │   ├── 📁 reset-password/ # Password reset
-│   │   │   │   ├── 📁 change-password/# Password change
-│   │   │   │   ├── 📁 grower-dashboard/# Grower dashboard
-│   │   │   │   ├── 📁 manufacturer-dashboard/ # Manufacturer dashboard
-│   │   │   │   ├── 📁 retailer-dashboard/     # Retailer dashboard
-│   │   │   │   ├── 📁 admin-dashboard/        # Admin dashboard
-│   │   │   │   ├── 📁 admin-users/     # User management
-│   │   │   │   ├── 📁 admin-events/    # Event management
-│   │   │   │   ├── 📁 admin-products/  # Product management
-│   │   │   │   ├── 📁 admin-points/    # Points management
-│   │   │   │   ├── 📁 admin-redemptions/# Redemption management
-│   │   │   │   ├── 📁 admin-add-admin/ # Admin creation
-│   │   │   │   ├── 📁 events/          # Event listing
-│   │   │   │   ├── 📁 products/        # Product catalog
-│   │   │   │   ├── 📁 transactions/    # Transaction history
-│   │   │   │   ├── 📁 profile/         # User profile
-│   │   │   │   └── 📁 unauthorized/    # 403 page
-│   │   │   │
-│   │   │   └── 📁 shared/             # Shared components
-│   │   │       └── 📁 components/     # Reusable UI components
-│   │   │           ├── 📁 admin-header/
-│   │   │           ├── 📁 grower-navbar/
-│   │   │           ├── 📁 retailer-navbar/
-│   │   │           ├── 📁 notification-dropdown/
-│   │   │           ├── 📁 filter-sidebar/
-│   │   │           ├── 📁 event-detail-modal/
-│   │   │           └── 📁 footer/
-│   │   │
-│   │   ├── 📁 environments/           # Environment configurations
-│   │   │   ├── environment.ts         # Development environment
-│   │   │   └── environment.prod.ts    # Production environment
-│   │   │
-│   │   ├── 📄 main.ts                 # Application entry point
-│   │   ├── 📄 main.server.ts          # Server entry point (SSR)
-│   │   ├── 📄 server.ts               # Express server setup
-│   │   ├── 📄 index.html              # Main HTML template
-│   │   └── 📄 styles.css              # Global styles
-│   │
-│   ├── 📁 public/                     # Static assets
-│   │   ├── agdata_logo.svg            # Application logo
-│   │   ├── adata_white.png            # White logo variant
-│   │   └── favicon.ico                # Browser favicon
-│   │
-│   ├── 📄 angular.json                # Angular CLI configuration
-│   ├── 📄 package.json                # Dependencies & scripts
-│   ├── 📄 tsconfig.json               # TypeScript base config
-│   ├── 📄 tsconfig.app.json           # TypeScript app config
-│   ├── 📄 tsconfig.spec.json          # TypeScript test config
-│   └── 📄 .editorconfig               # Editor configuration
-│
-├── 📄 .gitignore                      # Git ignore rules
-├── 📄 .env.example                    # Environment variables template
-└── 📄 README.md                       # This file
-```
-
----
-
 ## 🚀 Setup Instructions
 
 ### Prerequisites
@@ -221,67 +146,14 @@ Ensure you have the following installed:
    npm install
    ```
 
-4. **Set up environment variables (Optional for development)**
-   ```bash
-   # Copy the example environment file
-   cp ../.env.example ../.env
-   
-   # Edit .env with your configuration
-   # Note: Development uses mock API by default
-   ```
+4. **Development Server**
 
----
-
-## 🔧 Environment Variables
-
-The application uses environment-specific configuration files located in `client/src/environments/`.
-
-### Development Environment (`environment.ts`)
-
-```typescript
-{
-  production: false,
-  apiUrl: 'https://your-dev-api.azurewebsites.net',
-  useMockApi: true,        // Set to false to use real backend
-  tokenKey: 'marketplace_access_token',
-  refreshTokenKey: 'marketplace_refresh_token',
-  userKey: 'marketplace_user',
-  appName: 'AgriMarket'
-}
-```
-
-### Production Environment (`environment.prod.ts`)
-
-```typescript
-{
-  production: true,
-  apiUrl: 'https://your-prod-api.azurewebsites.net',
-  useMockApi: false,       // Always false in production
-  tokenKey: 'marketplace_access_token',
-  refreshTokenKey: 'marketplace_refresh_token',
-  userKey: 'marketplace_user',
-  appName: 'AgriMarket'
-}
-```
-
-### Important Notes
-
-- 🔴 **Never commit sensitive API keys or credentials**
-- 🟡 Use mock API (`useMockApi: true`) for frontend development without backend
-- 🟢 Update `apiUrl` to point to your actual backend API when ready
-
----
-
-## ▶️ Running the Project
-
-### Development Server
-
-Start the development server with hot reload:
-
-```bash
-cd client
-npm start
-```
+    Start the development server with hot reload:
+    
+    ```bash
+    cd client
+    npm start
+    ```
 
 The application will be available at:
 - 🌐 **URL**: http://localhost:4200/
