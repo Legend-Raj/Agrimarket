@@ -1,0 +1,113 @@
+<div class="dashboard-wrapper">
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo-section">
+        <a routerLink="/manufacturer" class="logo-link">
+          <img src="adata_white.png" alt="AGDATA" class="logo-img" />
+          <span class="role-badge">Manufacturer</span>
+        </a>
+      </div>
+      <nav class="main-nav">
+        <a routerLink="/manufacturer" class="nav-link active">Dashboard</a>
+        <a routerLink="/manufacturer/products" class="nav-link">Products</a>
+        <a routerLink="/manufacturer/orders" class="nav-link">Orders</a>
+        <a routerLink="/manufacturer/distribution" class="nav-link">Distribution</a>
+      </nav>
+      <div class="header-actions">
+        <div class="user-info">
+          <div class="user-name-block">
+            <span class="user-name">{{ userFirstName() }}</span>
+            <span class="user-role">Manufacturer</span>
+          </div>
+          <button class="logout-btn" (click)="onLogout()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16,17 21,12 16,7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <section class="welcome-banner">
+      <div class="welcome-content">
+        <h1 class="welcome-title">Welcome, {{ userFirstName() }}!</h1>
+        <p class="welcome-subtitle">Manage your products, track orders, and grow your distribution network.</p>
+      </div>
+    </section>
+
+    <!-- Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon products-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Products Listed</span>
+          <span class="stat-value">{{ stats().productsListed }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon orders-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Active Orders</span>
+          <span class="stat-value">{{ stats().activeOrders }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon dist-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Distributors</span>
+          <span class="stat-value">{{ stats().totalDistributors }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon revenue-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Monthly Revenue</span>
+          <span class="stat-value">{{ formatCurrency(stats().monthlyRevenue) }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Placeholder -->
+    <section class="placeholder-section">
+      <div class="placeholder-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <h3>Manufacturer features coming soon</h3>
+        <p>Product catalog management, bulk order processing, retailer connections, and distribution analytics will be available in the next phase.</p>
+      </div>
+    </section>
+  </main>
+
+  <app-footer></app-footer>
+</div>

@@ -1,0 +1,765 @@
+<div class="dashboard-wrapper">
+  <!-- Admin Header Component -->
+  <app-admin-header></app-admin-header>
+
+  <!-- ========================================
+       Main Content
+       ======================================== -->
+  <main class="main-content">
+    <!-- Page Title -->
+    <section class="page-header">
+      <h1 class="page-title">User Management</h1>
+      <p class="page-subtitle">Manage users, view details, and track top performers.</p>
+    </section>
+
+    <!-- Summary Card - Total Users -->
+    <section class="summary-section">
+      <div class="summary-card">
+        <div class="summary-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="summary-card-content">
+          <div class="summary-value">{{ formatPoints(totalUsers()) }}</div>
+          <div class="summary-label">Total users</div>
+        </div>
+        <div class="summary-card-decoration"></div>
+      </div>
+    </section>
+
+    <!-- Action Cards Grid -->
+    <section class="action-cards-section">
+      <h2 class="section-title">Quick Actions</h2>
+      <div class="action-cards-grid">
+        <!-- Add User Card -->
+        <button class="action-card add-user-card" (click)="openAddUserModal()">
+          <div class="action-card-header">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+            </div>
+          </div>
+          <div class="action-card-body">
+            <span class="action-card-label">Add User</span>
+            <p class="action-card-description">Create a new user account with employee details and credentials</p>
+          </div>
+          <div class="action-card-footer">
+            <span class="action-card-cta">
+              Create User
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </button>
+
+        <!-- Get User Details Card -->
+        <button class="action-card details-card" (click)="openUserListModal()">
+          <div class="action-card-header">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+          </div>
+          <div class="action-card-body">
+            <span class="action-card-label">Get User Details</span>
+            <p class="action-card-description">Search, view and edit user information with advanced filters</p>
+          </div>
+          <div class="action-card-footer">
+            <span class="action-card-cta">
+              View All
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </button>
+
+        <!-- Top 3 Users Card -->
+        <button class="action-card leaderboard-card" (click)="openTopUsersModal()">
+          <div class="action-card-header">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 15l-2 5-1-4-4 1 5-2"/>
+                <path d="M12 15l2 5 1-4 4 1-5-2"/>
+                <circle cx="12" cy="8" r="6"/>
+                <path d="M12 2v2M12 14v-1"/>
+              </svg>
+            </div>
+          </div>
+          <div class="action-card-body">
+            <span class="action-card-label">Top 3 Users</span>
+            <p class="action-card-description">View leaderboard of top performers by reward points</p>
+          </div>
+          <div class="action-card-footer">
+            <span class="action-card-cta">
+              View Rankings
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>
+
+<!-- ========================================
+     Add User Modal
+     ======================================== -->
+@if (showAddUserModal()) {
+  <div class="modal-overlay" (click)="closeAddUserModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New User</h2>
+        <button class="modal-close" (click)="closeAddUserModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (addUserSuccess()) {
+          <div class="alert alert-success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>{{ addUserSuccess() }}</span>
+          </div>
+        }
+
+        @if (addUserErrors()['general']) {
+          <div class="alert alert-error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ addUserErrors()['general'] }}</span>
+          </div>
+        }
+
+        <form class="modal-form" (ngSubmit)="submitAddUser()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName" class="form-label">First Name <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="firstName" 
+                class="form-input"
+                [class.error]="addUserErrors()['firstname']"
+                [value]="addUserForm().firstName"
+                (input)="updateAddUserField('firstName', $any($event.target).value)"
+                placeholder="Enter first name"
+              />
+              @if (addUserErrors()['firstname']) {
+                <span class="form-error">{{ addUserErrors()['firstname'] }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="middleName" class="form-label">Middle Name</label>
+              <input 
+                type="text" 
+                id="middleName" 
+                class="form-input"
+                [value]="addUserForm().middleName"
+                (input)="updateAddUserField('middleName', $any($event.target).value)"
+                placeholder="Enter middle name (optional)"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lastName" class="form-label">Last Name <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="lastName" 
+                class="form-input"
+                [class.error]="addUserErrors()['lastname']"
+                [value]="addUserForm().lastName"
+                (input)="updateAddUserField('lastName', $any($event.target).value)"
+                placeholder="Enter last name"
+              />
+              @if (addUserErrors()['lastname']) {
+                <span class="form-error">{{ addUserErrors()['lastname'] }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="employeeId" class="form-label">Employee ID <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="employeeId" 
+                class="form-input"
+                [class.error]="addUserErrors()['employeeid']"
+                [value]="addUserForm().employeeId"
+                (input)="updateAddUserField('employeeId', $any($event.target).value)"
+                placeholder="e.g., ABC-123"
+              />
+              @if (addUserErrors()['employeeid']) {
+                <span class="form-error">{{ addUserErrors()['employeeid'] }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="email" class="form-label">Email <span class="required">*</span></label>
+            <input 
+              type="email" 
+              id="email" 
+              class="form-input"
+              [class.error]="addUserErrors()['email']"
+              [value]="addUserForm().email"
+              (input)="updateAddUserField('email', $any($event.target).value)"
+              placeholder="Enter email address"
+            />
+            @if (addUserErrors()['email']) {
+              <span class="form-error">{{ addUserErrors()['email'] }}</span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="password" class="form-label">Password <span class="required">*</span></label>
+              <input 
+                type="password" 
+                id="password" 
+                class="form-input"
+                [class.error]="addUserErrors()['password']"
+                [value]="addUserForm().password"
+                (input)="updateAddUserField('password', $any($event.target).value)"
+                placeholder="Min. 8 characters"
+              />
+              @if (addUserErrors()['password']) {
+                <span class="form-error">{{ addUserErrors()['password'] }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword" class="form-label">Confirm Password <span class="required">*</span></label>
+              <input 
+                type="password" 
+                id="confirmPassword" 
+                class="form-input"
+                [class.error]="addUserErrors()['confirmpassword']"
+                [value]="addUserForm().confirmPassword"
+                (input)="updateAddUserField('confirmPassword', $any($event.target).value)"
+                placeholder="Confirm password"
+              />
+              @if (addUserErrors()['confirmpassword']) {
+                <span class="form-error">{{ addUserErrors()['confirmpassword'] }}</span>
+              }
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddUserModal()" [disabled]="isAddingUser()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="submitAddUser()" [disabled]="isAddingUser()">
+          @if (isAddingUser()) {
+            <span class="spinner"></span>
+            <span>Creating...</span>
+          } @else {
+            <span>Create User</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================
+     User List Modal
+     ======================================== -->
+@if (showUserListModal()) {
+  <div class="modal-overlay" (click)="closeUserListModal()">
+    <div class="modal-container modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">User Details</h2>
+        <button class="modal-close" (click)="closeUserListModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Search Bar -->
+        <div class="search-container">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input 
+            type="text" 
+            class="search-input"
+            placeholder="Search by name, email, or employee ID..."
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+          />
+        </div>
+
+        <!-- Users Table -->
+        <div class="table-container">
+          @if (userListLoading()) {
+            <div class="table-loading">
+              <span class="spinner-lg"></span>
+              <p>Loading users...</p>
+            </div>
+          } @else if (filteredUserList().length === 0) {
+            <div class="table-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+              <p>No users found</p>
+            </div>
+          } @else {
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Employee ID</th>
+                  <th>Points</th>
+                  <th>Status</th>
+                  <th>role</th>
+                  <th>Actions</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of filteredUserList(); track user.id) {
+                  <tr>
+                    <td class="user-name-cell">
+                      <div class="user-avatar">{{ user.firstName.charAt(0) }}</div>
+                      <span>{{ user.firstName }} {{ user.lastName }}</span>
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.employeeId }}</td>
+                    <td class="points-cell">{{ formatPoints(user.availablePoints) }}</td>
+                    <td>
+                      <span class="status-badge" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+                        {{ user.isActive ? 'Active' : 'Inactive' }}
+                      </span>
+                    </td>
+                    <td>{{ user.role }}</td>
+                    <td class="actions-cell">
+                      <button class="btn-edit" (click)="openEditUserModal(user)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Edit
+                      </button>
+                      <button class="btn-history" (click)="openUserHistoryModal(user)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        History
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <!-- Pagination -->
+            @if (totalPages() > 1) {
+              <div class="pagination">
+                <button 
+                  class="pagination-btn" 
+                  [disabled]="currentPage() === 1"
+                  (click)="goToPage(currentPage() - 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                  </svg>
+                </button>
+                <span class="pagination-info">
+                  Page {{ currentPage() }} of {{ totalPages() }}
+                </span>
+                <button 
+                  class="pagination-btn" 
+                  [disabled]="currentPage() === totalPages()"
+                  (click)="goToPage(currentPage() + 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================
+     Edit User Modal
+     ======================================== -->
+@if (showEditUserModal()) {
+  <div class="modal-overlay" (click)="closeEditUserModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Edit User</h2>
+        <button class="modal-close" (click)="closeEditUserModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (editUserSuccess()) {
+          <div class="alert alert-success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>{{ editUserSuccess() }}</span>
+          </div>
+        }
+
+        @if (editUserErrors()['general']) {
+          <div class="alert alert-error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ editUserErrors()['general'] }}</span>
+          </div>
+        }
+
+        <form class="modal-form" (ngSubmit)="submitEditUser()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editFirstName" class="form-label">First Name <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="editFirstName" 
+                class="form-input"
+                [class.error]="editUserErrors()['firstname']"
+                [value]="editUserForm().firstName"
+                (input)="updateEditUserField('firstName', $any($event.target).value)"
+              />
+              @if (editUserErrors()['firstname']) {
+                <span class="form-error">{{ editUserErrors()['firstname'] }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="editMiddleName" class="form-label">Middle Name</label>
+              <input 
+                type="text" 
+                id="editMiddleName" 
+                class="form-input"
+                [value]="editUserForm().middleName"
+                (input)="updateEditUserField('middleName', $any($event.target).value)"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editLastName" class="form-label">Last Name <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="editLastName" 
+                class="form-input"
+                [class.error]="editUserErrors()['lastname']"
+                [value]="editUserForm().lastName"
+                (input)="updateEditUserField('lastName', $any($event.target).value)"
+              />
+              @if (editUserErrors()['lastname']) {
+                <span class="form-error">{{ editUserErrors()['lastname'] }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="editEmployeeId" class="form-label">Employee ID <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="editEmployeeId" 
+                class="form-input"
+                [class.error]="editUserErrors()['employeeid']"
+                [value]="editUserForm().employeeId"
+                (input)="updateEditUserField('employeeId', $any($event.target).value)"
+              />
+              @if (editUserErrors()['employeeid']) {
+                <span class="form-error">{{ editUserErrors()['employeeid'] }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="editEmail" class="form-label">Email <span class="required">*</span></label>
+            <input 
+              type="email" 
+              id="editEmail" 
+              class="form-input"
+              [class.error]="editUserErrors()['email']"
+              [value]="editUserForm().email"
+              (input)="updateEditUserField('email', $any($event.target).value)"
+            />
+            @if (editUserErrors()['email']) {
+              <span class="form-error">{{ editUserErrors()['email'] }}</span>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Status</label>
+            <div class="toggle-container">
+              <label class="toggle" [class.disabled]="isEditingSelf()">
+                <input 
+                  type="checkbox" 
+                  [checked]="editUserForm().isActive"
+                  (change)="updateEditUserField('isActive', $any($event.target).checked)"
+                  [disabled]="isEditingSelf()"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-label">{{ editUserForm().isActive ? 'Active' : 'Inactive' }}</span>
+            </div>
+            @if (isEditingSelf()) {
+              <span class="form-hint">You cannot change your own account status.</span>
+            }
+            @if (editUserErrors()['isactive']) {
+              <span class="form-error">{{ editUserErrors()['isactive'] }}</span>
+            }
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditUserModal()" [disabled]="isUpdatingUser()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="submitEditUser()" [disabled]="isUpdatingUser()">
+          @if (isUpdatingUser()) {
+            <span class="spinner"></span>
+            <span>Saving...</span>
+          } @else {
+            <span>Save Changes</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================
+     Top 3 Users Modal
+     ======================================== -->
+@if (showTopUsersModal()) {
+  <div class="modal-overlay" (click)="closeTopUsersModal()">
+    <div class="modal-container modal-md" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Top 3 Users</h2>
+        <button class="modal-close" (click)="closeTopUsersModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (topUsersLoading()) {
+          <div class="loading-container">
+            <span class="spinner-lg"></span>
+            <p>Loading top users...</p>
+          </div>
+        } @else if (topUsers().length === 0) {
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            <p>No users found</p>
+          </div>
+        } @else {
+          <div class="top-users-list">
+            @for (user of topUsers(); track user.id; let i = $index) {
+              <div class="top-user-card" [class]="getRankClass(i)">
+                <div class="rank-badge">
+                  <span class="rank-icon">{{ getRankIcon(i) }}</span>
+                </div>
+                <div class="user-info">
+                  <div class="user-avatar-lg">{{ user.firstName.charAt(0) }}</div>
+                  <div class="user-details">
+                    <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+                    <span class="user-email">{{ user.email }}</span>
+                  </div>
+                </div>
+                <div class="user-points">
+                  <span class="points-value">{{ formatPoints(user.availablePoints) }}</span>
+                  <span class="points-label">Available Points</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================
+     User Transaction History Modal
+     ======================================== -->
+@if (showUserHistoryModal()) {
+  <div class="modal-overlay" (click)="closeUserHistoryModal()">
+    <div class="modal-container modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-content">
+          <h2 class="modal-title">Transaction History</h2>
+          @if (historyUser()) {
+            <p class="modal-subtitle">{{ historyUser()!.firstName }} {{ historyUser()!.lastName }} • {{ historyUser()!.email }}</p>
+          }
+        </div>
+        <button class="modal-close" (click)="closeUserHistoryModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- User Summary Card -->
+        @if (historyUser()) {
+          <div class="user-summary-card">
+            <div class="user-summary-avatar">{{ historyUser()!.firstName.charAt(0) }}</div>
+            <div class="user-summary-info">
+              <span class="user-summary-name">{{ historyUser()!.firstName }} {{ historyUser()!.lastName }}</span>
+              <span class="user-summary-id">{{ historyUser()!.employeeId }}</span>
+            </div>
+            <div class="user-summary-points">
+              <div class="points-stat">
+                <span class="points-stat-value">{{ formatPoints(historyUser()!.totalPoints) }}</span>
+                <span class="points-stat-label">Total Earned</span>
+              </div>
+              <div class="points-stat">
+                <span class="points-stat-value available">{{ formatPoints(historyUser()!.availablePoints) }}</span>
+                <span class="points-stat-label">Available</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Transactions List -->
+        <div class="history-table-container">
+          @if (userHistoryLoading()) {
+            <div class="table-loading">
+              <span class="spinner-lg"></span>
+              <p>Loading transaction history...</p>
+            </div>
+          } @else if (userTransactions().length === 0) {
+            <div class="table-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="1"/>
+                <line x1="9" y1="12" x2="15" y2="12"/>
+                <line x1="9" y1="16" x2="13" y2="16"/>
+              </svg>
+              <p>No transactions found for this user</p>
+            </div>
+          } @else {
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Event / Source</th>
+                  <th>Points</th>
+                  <th>Date & Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (transaction of userTransactions(); track transaction.id) {
+                  <tr class="history-row">
+                    <td>
+                      <span class="type-badge" [class]="getTransactionTypeClass(transaction.type)">
+                        @if (transaction.type === 'Earn') {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <polyline points="19 12 12 5 5 12"/>
+                          </svg>
+                          Earned
+                        } @else {
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="19" x2="12" y2="5"/>
+                            <polyline points="5 12 12 19 19 12"/>
+                          </svg>
+                          Redeemed
+                        }
+                      </span>
+                    </td>
+                    <td class="event-cell">
+                      <span class="event-name">{{ transaction.eventName }}</span>
+                    </td>
+                    <td>
+                      <span class="points-badge" [class]="getTransactionTypeClass(transaction.type)">
+                        {{ getPointsPrefix(transaction.type) }}{{ formatPoints(transaction.points) }}
+                      </span>
+                    </td>
+                    <td class="date-cell">
+                      <span class="date-text">{{ formatDateTime(transaction.timestamp) }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <!-- Pagination -->
+            @if (userHistoryTotalPages() > 1) {
+              <div class="pagination">
+                <button 
+                  class="pagination-btn" 
+                  [disabled]="userHistoryPage() === 1"
+                  (click)="goToHistoryPage(userHistoryPage() - 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                  </svg>
+                </button>
+                <span class="pagination-info">
+                  Page {{ userHistoryPage() }} of {{ userHistoryTotalPages() }}
+                </span>
+                <button 
+                  class="pagination-btn" 
+                  [disabled]="userHistoryPage() === userHistoryTotalPages()"
+                  (click)="goToHistoryPage(userHistoryPage() + 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

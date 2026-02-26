@@ -1,0 +1,61 @@
+/* ==========================================================================
+   Shared Footer Component Styles
+   AGDATA Employee Rewards Program
+   ========================================================================== */
+
+:host {
+  display: block;
+  margin-top: auto;
+}
+
+.main-footer {
+  background: #1E3A0F; /* --agdata-primary-dark */
+  padding: 1.5rem 32px;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-logo {
+  height: 28px;
+  width: auto;
+  opacity: 0.9;
+}
+
+.footer-tagline {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-copyright {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .main-footer {
+    padding: 1.5rem 16px;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}

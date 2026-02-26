@@ -1,0 +1,678 @@
+<div class="dashboard-wrapper">
+  <!-- Admin Header Component -->
+  <app-admin-header></app-admin-header>
+
+  <!-- ========================================
+       Main Content
+       ======================================== -->
+  <main class="main-content">
+    <!-- Page Title -->
+    <section class="page-header">
+      <h1 class="page-title">Points Management</h1>
+      <p class="page-subtitle">Allocate reward points to employees and track distribution.</p>
+    </section>
+
+    <!-- Summary Card - Total Points Allocated with Dropdown -->
+    <section class="summary-section">
+      <div class="summary-card-wrapper">
+        <div class="summary-card">
+          <div class="summary-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="summary-card-content">
+            <div class="summary-value">{{ formatNumber(totalPointsAllocated()) }}</div>
+            <div class="summary-label">Total Points Allocated</div>
+            <div class="summary-subtext">{{ getPeriodLabel() }}</div>
+          </div>
+          <div class="summary-card-decoration"></div>
+        </div>
+        
+        <!-- Filter By Dropdown -->
+        <div class="filter-by-container">
+          <div class="filter-by-label">Sort By</div>
+          <select 
+            class="filter-by-select"
+            [value]="timePeriod()"
+            (change)="onPeriodChange($event)">
+            @for (option of periodOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Cards Grid -->
+    <section class="action-cards-section">
+      <div class="action-cards-grid two-cards">
+        <!-- Allocate Points Card -->
+        <button class="action-card allocate-card" (click)="openAllocateModal()">
+          <div class="action-card-header">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+          </div>
+          <div class="action-card-body">
+            <span class="action-card-label">Allocate Points</span>
+            <p class="action-card-description">Award points to a single participant of a completed event</p>
+          </div>
+          <div class="action-card-footer">
+            <span class="action-card-cta">
+              Allocate Now
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </button>
+
+        <!-- Bulk Allocate Points Card -->
+        <button class="action-card bulk-card" (click)="openBulkAllocateModal()">
+          <div class="action-card-header">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+          </div>
+          <div class="action-card-body">
+            <span class="action-card-label">Bulk Allocate Points</span>
+            <p class="action-card-description">Award points to multiple participants with Individual or Total allocation</p>
+          </div>
+          <div class="action-card-footer">
+            <span class="action-card-cta">
+              Bulk Allocate
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Additional Stats Section -->
+    <section class="quick-stats-section">
+      <div class="quick-stats-grid">
+        <div class="quick-stat-card">
+          <div class="quick-stat-icon transactions-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="quick-stat-content">
+            <span class="quick-stat-value">{{ formatNumber(totalTransactions()) }}</span>
+            <span class="quick-stat-label">Transactions ({{ getPeriodLabel() }})</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>
+
+<!-- ========================================
+     Allocate Points Modal (Event-First Workflow)
+     ======================================== -->
+@if (showAllocateModal()) {
+  <div class="modal-overlay" (click)="closeAllocateModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Allocate Points to Participant</h2>
+        <button class="modal-close" (click)="closeAllocateModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (allocateSuccess()) {
+          <div class="alert alert-success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>{{ allocateSuccess() }}</span>
+          </div>
+        }
+
+        @if (allocateErrors()['general']) {
+          <div class="alert alert-error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ allocateErrors()['general'] }}</span>
+          </div>
+        }
+
+        <form class="modal-form" (ngSubmit)="confirmAllocate()">
+          <!-- Step 1: Event Selection (FIRST) -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span class="step-number">1</span>
+              Select Event <span class="required">*</span>
+            </label>
+            <div class="custom-select-container" (click)="toggleEventDropdown($event)">
+              <div class="custom-select-trigger" [class.error]="allocateErrors()['eventId']">
+                @if (selectedEventName()) {
+                  <span class="selected-value">{{ selectedEventName() }}</span>
+                } @else {
+                  <span class="placeholder">Select a completed event...</span>
+                }
+                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              
+              @if (isEventDropdownOpen()) {
+                <div class="custom-select-dropdown" (click)="$event.stopPropagation()">
+                  <div class="dropdown-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input 
+                      type="text" 
+                      placeholder="Search events..."
+                      [value]="eventSearchQuery()"
+                      (input)="onEventSearch($event)"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </div>
+                  <div class="dropdown-options">
+                    @if (eventsLoading()) {
+                      <div class="dropdown-loading">
+                        <div class="spinner-sm"></div>
+                        <span>Loading events...</span>
+                      </div>
+                    } @else if (filteredEvents().length === 0) {
+                      <div class="dropdown-empty">No completed events found</div>
+                    } @else {
+                      @for (event of filteredEvents(); track event.id) {
+                        <div 
+                          class="dropdown-option"
+                          [class.selected]="allocateForm().eventId === event.id"
+                          (click)="selectEvent(event.id)">
+                          <div class="event-option-info">
+                            <span class="event-option-name">{{ event.name }}</span>
+                            <span class="event-option-status">Completed</span>
+                          </div>
+                          @if (allocateForm().eventId === event.id) {
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          }
+                        </div>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+            @if (allocateErrors()['eventId']) {
+              <span class="form-error">{{ allocateErrors()['eventId'] }}</span>
+            }
+          </div>
+
+          <!-- Step 2: Participant Selection (enabled only after event selected) -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span class="step-number">2</span>
+              Select Participant <span class="required">*</span>
+            </label>
+            <div class="custom-select-container" [class.disabled]="!allocateForm().eventId" (click)="toggleUserDropdown($event)">
+              <div class="custom-select-trigger" [class.error]="allocateErrors()['userId']" [class.disabled]="!allocateForm().eventId">
+                @if (selectedUserName()) {
+                  <span class="selected-value">{{ selectedUserName() }}</span>
+                } @else if (!allocateForm().eventId) {
+                  <span class="placeholder disabled">Select an event first...</span>
+                } @else {
+                  <span class="placeholder">Select a participant...</span>
+                }
+                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              
+              @if (isUserDropdownOpen()) {
+                <div class="custom-select-dropdown" (click)="$event.stopPropagation()">
+                  <div class="dropdown-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input 
+                      type="text" 
+                      placeholder="Search participants..."
+                      [value]="userSearchQuery()"
+                      (input)="onUserSearch($event)"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </div>
+                  <div class="dropdown-options">
+                    @if (participantsLoading()) {
+                      <div class="dropdown-loading">
+                        <div class="spinner-sm"></div>
+                        <span>Loading participants...</span>
+                      </div>
+                    } @else if (filteredParticipants().length === 0) {
+                      <div class="dropdown-empty">
+                        @if (participantUsers().length === 0) {
+                          No participants found for this event
+                        } @else {
+                          All participants have already received points
+                        }
+                      </div>
+                    } @else {
+                      @for (user of filteredParticipants(); track user.userId) {
+                        <div 
+                          class="dropdown-option"
+                          [class.selected]="allocateForm().userId === user.userId"
+                          (click)="selectUser(user.userId)">
+                          <div class="user-option-info">
+                            <span class="user-option-name">{{ user.fullName }}</span>
+                            <span class="user-option-email">{{ user.email }}</span>
+                          </div>
+                          @if (allocateForm().userId === user.userId) {
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          }
+                        </div>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+            @if (allocateErrors()['userId']) {
+              <span class="form-error">{{ allocateErrors()['userId'] }}</span>
+            }
+          </div>
+
+          <!-- Step 3: Points Input -->
+          <div class="form-group full-width">
+            <label for="points" class="form-label">
+              <span class="step-number">3</span>
+              Points <span class="required">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="points" 
+              class="form-input"
+              [class.error]="allocateErrors()['points']"
+              [value]="allocateForm().points"
+              (input)="updateAllocateField('points', $any($event.target).valueAsNumber || null)"
+              placeholder="Enter points to allocate"
+              min="1"
+              max="1000000"
+            />
+            @if (allocateErrors()['points']) {
+              <span class="form-error">{{ allocateErrors()['points'] }}</span>
+            }
+          </div>
+
+          <div class="modal-footer-inline">
+            <button type="button" class="btn btn-secondary" (click)="closeAllocateModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isAllocating()">
+              @if (isAllocating()) {
+                <span class="spinner"></span>
+                <span>Allocating...</span>
+              } @else {
+                <span>Allocate Points</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================
+     Bulk Allocate Points Modal (Event-First Workflow with Allocation Type)
+     ======================================== -->
+@if (showBulkAllocateModal()) {
+  <div class="modal-overlay" (click)="closeBulkAllocateModal()">
+    <div class="modal-container modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Bulk Allocate Points to Participants</h2>
+        <button class="modal-close" (click)="closeBulkAllocateModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (bulkAllocateSuccess()) {
+          <div class="alert alert-success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>{{ bulkAllocateSuccess() }}</span>
+          </div>
+        }
+
+        @if (bulkAllocateErrors()['general']) {
+          <div class="alert alert-error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ bulkAllocateErrors()['general'] }}</span>
+          </div>
+        }
+
+        <form class="modal-form" (ngSubmit)="confirmBulkAllocate()">
+          <!-- Step 1: Event Selection (FIRST) -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span class="step-number">1</span>
+              Select Event <span class="required">*</span>
+            </label>
+            <div class="custom-select-container" (click)="toggleBulkEventDropdown($event)">
+              <div class="custom-select-trigger" [class.error]="bulkAllocateErrors()['eventId']">
+                @if (selectedBulkEventName()) {
+                  <span class="selected-value">{{ selectedBulkEventName() }}</span>
+                } @else {
+                  <span class="placeholder">Select a completed event...</span>
+                }
+                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              
+              @if (isBulkEventDropdownOpen()) {
+                <div class="custom-select-dropdown" (click)="$event.stopPropagation()">
+                  <div class="dropdown-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input 
+                      type="text" 
+                      placeholder="Search events..."
+                      [value]="eventSearchQuery()"
+                      (input)="onEventSearch($event)"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </div>
+                  <div class="dropdown-options">
+                    @if (eventsLoading()) {
+                      <div class="dropdown-loading">
+                        <div class="spinner-sm"></div>
+                        <span>Loading events...</span>
+                      </div>
+                    } @else if (filteredEvents().length === 0) {
+                      <div class="dropdown-empty">No completed events found</div>
+                    } @else {
+                      @for (event of filteredEvents(); track event.id) {
+                        <div 
+                          class="dropdown-option"
+                          [class.selected]="bulkAllocateForm().eventId === event.id"
+                          (click)="selectBulkEvent(event.id)">
+                          <div class="event-option-info">
+                            <span class="event-option-name">{{ event.name }}</span>
+                            <span class="event-option-status">Completed</span>
+                          </div>
+                          @if (bulkAllocateForm().eventId === event.id) {
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          }
+                        </div>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+            @if (bulkAllocateErrors()['eventId']) {
+              <span class="form-error">{{ bulkAllocateErrors()['eventId'] }}</span>
+            }
+          </div>
+
+          <!-- Step 2: Participant Multi-Selection (enabled only after event selected) -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span class="step-number">2</span>
+              Select Participants <span class="required">*</span>
+              @if (selectedUsersCount() > 0) {
+                <span class="selected-count">({{ selectedUsersCount() }} selected)</span>
+              }
+            </label>
+            <div class="custom-select-container multi-select" [class.disabled]="!bulkAllocateForm().eventId" (click)="toggleBulkUserDropdown($event)">
+              <div class="custom-select-trigger" [class.error]="bulkAllocateErrors()['userIds']" [class.disabled]="!bulkAllocateForm().eventId">
+                @if (selectedUsersCount() > 0) {
+                  <span class="selected-value">{{ selectedUsersCount() }} participant(s) selected</span>
+                } @else if (!bulkAllocateForm().eventId) {
+                  <span class="placeholder disabled">Select an event first...</span>
+                } @else {
+                  <span class="placeholder">Click to select participants...</span>
+                }
+                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </div>
+              
+              @if (isBulkUserDropdownOpen()) {
+                <div class="custom-select-dropdown multi-dropdown" (click)="$event.stopPropagation()">
+                  <div class="dropdown-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input 
+                      type="text" 
+                      placeholder="Search participants..."
+                      [value]="userSearchQuery()"
+                      (input)="onUserSearch($event)"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </div>
+                  <div class="dropdown-actions">
+                    <button type="button" class="select-all-btn" (click)="selectAllParticipants(); $event.stopPropagation()">
+                      {{ allFilteredParticipantsSelected() ? 'Deselect All' : 'Select All' }}
+                    </button>
+                  </div>
+                  <div class="dropdown-options multi-options">
+                    @if (participantsLoading()) {
+                      <div class="dropdown-loading">
+                        <div class="spinner-sm"></div>
+                        <span>Loading participants...</span>
+                      </div>
+                    } @else if (filteredSelectableParticipants().length === 0) {
+                      <div class="dropdown-empty">No participants found for this event</div>
+                    } @else {
+                      @for (user of filteredSelectableParticipants(); track user.userId) {
+                        <div 
+                          class="dropdown-option checkbox-option"
+                          [class.selected]="user.selected"
+                          [class.received-points]="user.hasReceivedPoints"
+                          (click)="toggleParticipantSelection(user.userId); $event.stopPropagation()">
+                          <div class="checkbox-wrapper">
+                            <input 
+                              type="checkbox" 
+                              [checked]="user.selected"
+                              (change)="toggleParticipantSelection(user.userId)"
+                              (click)="$event.stopPropagation()"
+                            />
+                            <span class="checkmark"></span>
+                          </div>
+                          <div class="user-option-info">
+                            <span class="user-option-name">
+                              {{ user.fullName }}
+                              @if (user.hasReceivedPoints) {
+                                <span class="received-badge">Already received points</span>
+                              }
+                            </span>
+                            <span class="user-option-email">{{ user.email }}</span>
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+            @if (bulkAllocateErrors()['userIds']) {
+              <span class="form-error">{{ bulkAllocateErrors()['userIds'] }}</span>
+            }
+          </div>
+
+          <!-- Step 3: Allocation Type Selection -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span class="step-number">3</span>
+              Allocation Type <span class="required">*</span>
+            </label>
+            <div class="allocation-type-options">
+              @for (option of allocationTypeOptions; track option.value) {
+                <label class="allocation-type-option" [class.selected]="bulkAllocateForm().allocationType === option.value">
+                  <input 
+                    type="radio" 
+                    name="allocationType"
+                    [value]="option.value"
+                    [checked]="bulkAllocateForm().allocationType === option.value"
+                    (change)="updateBulkAllocateField('allocationType', option.value)"
+                  />
+                  <div class="option-content">
+                    <span class="option-label">{{ option.label }}</span>
+                    <span class="option-description">{{ option.description }}</span>
+                  </div>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- Step 4: Points Input -->
+          <div class="form-group full-width">
+            <label for="bulkPoints" class="form-label">
+              <span class="step-number">4</span>
+              {{ bulkAllocateForm().allocationType === 'Total' ? 'Total Points' : 'Points per Participant' }} <span class="required">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="bulkPoints" 
+              class="form-input"
+              [class.error]="bulkAllocateErrors()['points'] || divisibilityError()"
+              [value]="bulkAllocateForm().points"
+              (input)="updateBulkAllocateField('points', $any($event.target).valueAsNumber || null)"
+              [placeholder]="bulkAllocateForm().allocationType === 'Total' ? 'Enter total points to divide' : 'Enter points per participant'"
+              min="1"
+              max="1000000"
+            />
+            @if (bulkAllocateErrors()['points']) {
+              <span class="form-error">{{ bulkAllocateErrors()['points'] }}</span>
+            }
+            @if (divisibilityError()) {
+              <span class="form-error divisibility-error">{{ divisibilityError() }}</span>
+            }
+            @if (selectedUsersCount() > 0 && bulkAllocateForm().points && !divisibilityError()) {
+              <span class="form-hint">
+                @if (bulkAllocateForm().allocationType === 'Total') {
+                  {{ formatNumber(pointsPerUserForTotal()!) }} points each × {{ selectedUsersCount() }} participant(s) = {{ formatNumber(bulkAllocateForm().points!) }} total
+                } @else {
+                  {{ formatNumber(bulkAllocateForm().points!) }} points × {{ selectedUsersCount() }} participant(s) = {{ formatNumber(selectedUsersCount() * bulkAllocateForm().points!) }} total
+                }
+              </span>
+            }
+          </div>
+
+          <!-- Step 5: Team Name (Optional) -->
+          <div class="form-group full-width">
+            <label class="form-label">
+              <span class="step-number">5</span>
+              Team Name <span class="optional">(Optional)</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-input"
+              placeholder="e.g., Sales Team, Marketing Group"
+              [value]="bulkAllocateForm().teamName"
+              (input)="updateBulkAllocateField('teamName', $any($event.target).value)"
+            />
+            <span class="form-hint">Optional team identifier for tracking and display purposes</span>
+          </div>
+
+          <div class="modal-footer-inline">
+            <button type="button" class="btn btn-secondary" (click)="closeBulkAllocateModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="isBulkAllocating() || !!divisibilityError()">
+              @if (isBulkAllocating()) {
+                <span class="spinner"></span>
+                <span>Allocating...</span>
+              } @else {
+                <span>Allocate to {{ selectedUsersCount() }} Participant(s)</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================
+     Confirmation Modal
+     ======================================== -->
+@if (showConfirmModal()) {
+  <div class="modal-overlay" (click)="closeConfirmModal()">
+    <div class="modal-container modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">{{ confirmTitle() }}</h2>
+        <button class="modal-close" (click)="closeConfirmModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="confirm-content">
+          <div class="confirm-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <p class="confirm-message">{{ confirmMessage() }}</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeConfirmModal()" [disabled]="isConfirmLoading()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="executeConfirmedAction()" [disabled]="isConfirmLoading()">
+          @if (isConfirmLoading()) {
+            <span class="spinner"></span>
+            <span>Processing...</span>
+          } @else {
+            <span>Confirm</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

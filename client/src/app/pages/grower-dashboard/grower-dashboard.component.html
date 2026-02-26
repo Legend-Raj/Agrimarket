@@ -1,0 +1,87 @@
+<div class="dashboard-wrapper">
+  <!-- Grower Navbar -->
+  <app-grower-navbar></app-grower-navbar>
+
+  <!-- Content Container with Sidebar -->
+  <div class="content-container">
+    <!-- Filter Sidebar -->
+    <app-filter-sidebar></app-filter-sidebar>
+
+    <!-- Main Content -->
+    <main class="main-content">
+    <!-- Welcome Banner -->
+    <section class="welcome-banner">
+      <div class="welcome-content">
+        <h1 class="welcome-title">{{ getGreeting() }}, {{ userFirstName() }}!</h1>
+        <p class="welcome-subtitle">Explore products, check offers, and manage your farm supplies.</p>
+      </div>
+    </section>
+
+    <!-- Current Offers -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Current Offers</h2>
+        <a routerLink="/grower/offers" class="view-all-link">View all</a>
+      </div>
+
+      <div class="offers-grid">
+        @for (offer of offers(); track offer.id) {
+          <div class="offer-card">
+            <div class="offer-badge">{{ offer.discountPercent }}% OFF</div>
+            <h3 class="offer-title">{{ offer.title }}</h3>
+            <p class="offer-description">{{ offer.description }}</p>
+            <span class="offer-validity">Valid until {{ offer.validUntil }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Featured Products</h2>
+        <a routerLink="/grower/products" class="view-all-link">View all</a>
+      </div>
+
+      <div class="products-grid">
+        @for (product of products(); track product.id) {
+          <div class="product-card">
+            <div class="product-image">
+              <div class="product-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+            </div>
+            <div class="product-info">
+              <span class="product-category">{{ product.category }}</span>
+              <h4 class="product-name">{{ product.name }}</h4>
+              <p class="product-description">{{ product.description }}</p>
+              <div class="product-footer">
+                <span class="product-price">&#8377;{{ product.price.toLocaleString() }}</span>
+                <span class="product-unit">{{ product.unit }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  </main>
+  </div>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+
+  <!-- Loading Overlay -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="loading-spinner">
+        <svg viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="80 60"/>
+        </svg>
+      </div>
+    </div>
+  }
+</div>

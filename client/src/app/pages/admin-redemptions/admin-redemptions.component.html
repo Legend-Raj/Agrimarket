@@ -1,0 +1,348 @@
+<div class="dashboard-wrapper">
+  <!-- Admin Header Component -->
+  <app-admin-header [pendingRequests]="pendingCount()"></app-admin-header>
+
+  <!-- ========================================
+       Main Content
+       ======================================== -->
+  <main class="main-content">
+    <!-- Page Title -->
+    <section class="page-header">
+      <h1 class="page-title">Redemption Requests</h1>
+      <p class="page-subtitle">Manage user redemption requests and update statuses.</p>
+    </section>
+
+    <!-- Stats Cards -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <!-- Pending Requests -->
+        <div class="stat-card stat-pending">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatPoints(pendingCount()) }}</span>
+            <span class="stat-label">Pending</span>
+          </div>
+        </div>
+
+        <!-- Approved Requests -->
+        <div class="stat-card stat-approved">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatPoints(approvedCount()) }}</span>
+            <span class="stat-label">Approved</span>
+          </div>
+        </div>
+
+        <!-- Delivered Requests -->
+        <div class="stat-card stat-delivered">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatPoints(deliveredCount()) }}</span>
+            <span class="stat-label">Delivered</span>
+          </div>
+        </div>
+
+        <!-- Total Requests -->
+        <div class="stat-card stat-total">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatPoints(totalRequests()) }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Requests Table Section -->
+    <section class="requests-section">
+      <div class="requests-card">
+        <!-- Card Header with Filter -->
+        <div class="card-header">
+          <h2 class="card-title">All Requests</h2>
+          <div class="filter-container">
+            <label for="statusFilter" class="filter-label">Filter by Status:</label>
+            <select 
+              id="statusFilter" 
+              class="filter-select"
+              [value]="statusFilter()"
+              (change)="onFilterChange($any($event.target).value)">
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+          @if (requestsLoading()) {
+            <div class="table-loading">
+              <span class="spinner-lg"></span>
+              <p>Loading requests...</p>
+            </div>
+          } @else if (filteredRequests().length === 0) {
+            <div class="table-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                <line x1="9" y1="12" x2="15" y2="12"/>
+              </svg>
+              <p>No redemption requests found</p>
+            </div>
+          } @else {
+            <table class="requests-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Total Points</th>
+                  <th>Last Updated</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (request of filteredRequests(); track request.id) {
+                  <tr [class.row-success]="request.updateSuccess">
+                    <!-- User Column -->
+                    <td class="user-cell">
+                      <div class="user-info">
+                        <div class="user-avatar">{{ request.userName.charAt(0) || 'U' }}</div>
+                        <div class="user-details">
+                          <span class="user-name">{{ request.userName || 'Unknown User' }}</span>
+                          <span class="user-email">{{ request.userEmail || '' }}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Product Column -->
+                    <td class="product-cell">
+                      <div class="product-info">
+                        @if (request.productImageUrl) {
+                          <img [src]="request.productImageUrl" [alt]="request.productName" class="product-image" />
+                        } @else {
+                          <div class="product-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/>
+                              <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/>
+                              <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/>
+                            </svg>
+                          </div>
+                        }
+                        <span class="product-name">{{ request.productName || 'Unknown Product' }}</span>
+                      </div>
+                    </td>
+
+                    <!-- Quantity Column -->
+                    <td class="quantity-cell">
+                      <span class="quantity-value">{{ request.quantity || 1 }}</span>
+                    </td>
+
+                    <!-- Total Points Column -->
+                    <td class="points-cell">
+                      <div class="points-info">
+                        <span class="points-value">{{ formatPoints(request.totalPointsCost || request.pointsCost || 0) }}</span>
+                        @if ((request.quantity || 1) > 1) {
+                          <span class="points-detail">({{ formatPoints(request.pointsCost || 0) }} × {{ request.quantity }})</span>
+                        }
+                      </div>
+                    </td>
+
+                    <!-- Last Updated Column -->
+                    <td class="date-cell">
+                      <span class="date-value">{{ getLastUpdated(request) }}</span>
+                    </td>
+
+                    <!-- Status Column -->
+                    <td>
+                      <span class="status-badge" [class]="getStatusClass(request.status)">
+                        {{ request.status }}
+                      </span>
+                    </td>
+
+                    <!-- Actions Column -->
+                    <td class="actions-cell">
+                      @if (request.updateSuccess) {
+                        <span class="success-indicator">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                          </svg>
+                          Updated
+                        </span>
+                      } @else if (request.updateError) {
+                        <div class="error-indicator">
+                          <span class="error-text">{{ request.updateError }}</span>
+                          <button class="btn-dismiss" (click)="clearError(request)">×</button>
+                        </div>
+                      } @else if (request.isUpdating) {
+                        <div class="updating-indicator">
+                          <span class="spinner-sm"></span>
+                          <span>Updating...</span>
+                        </div>
+                      } @else if (canTakeAction(request)) {
+                        <div class="action-controls">
+                          <select 
+                            class="action-select"
+                            [value]="request.selectedAction || ''"
+                            (change)="selectAction(request, $any($event.target).value)">
+                            <option value="" disabled>Select action...</option>
+                            @for (action of getAvailableActions(request.status); track action) {
+                              <option [value]="action">{{ getActionLabel(action) }}</option>
+                            }
+                          </select>
+                          <button 
+                            class="btn-apply"
+                            [class]="getActionButtonClass(request.selectedAction!)"
+                            [disabled]="!request.selectedAction"
+                            (click)="confirmActionForRequest(request)">
+                            Apply
+                          </button>
+                        </div>
+                      } @else {
+                        <span class="no-actions">—</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <!-- Pagination -->
+            @if (totalPages() > 1) {
+              <div class="pagination">
+                <button 
+                  class="pagination-btn" 
+                  [disabled]="currentPage() === 1"
+                  (click)="goToPage(currentPage() - 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                  </svg>
+                </button>
+                <span class="pagination-info">
+                  Page {{ currentPage() }} of {{ totalPages() }}
+                </span>
+                <button 
+                  class="pagination-btn" 
+                  [disabled]="currentPage() === totalPages()"
+                  (click)="goToPage(currentPage() + 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>
+
+<!-- ========================================
+     Confirmation Modal
+     ======================================== -->
+@if (showConfirmModal()) {
+  <div class="modal-overlay" (click)="closeConfirmModal()">
+    <div class="modal-container modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Confirm Action</h2>
+        <button class="modal-close" (click)="closeConfirmModal()" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="confirm-content">
+          <div class="confirm-icon" [class]="getActionButtonClass(confirmAction()!)">
+            @switch (confirmAction()) {
+              @case ('approve') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+              }
+              @case ('deliver') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              }
+              @case ('reject') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+              }
+              @case ('cancel') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+              }
+            }
+          </div>
+          <h3 class="confirm-title">{{ getActionLabel(confirmAction()!) }} Request?</h3>
+          <p class="confirm-description">{{ getActionDescription(confirmAction()!) }}</p>
+          
+          @if (confirmRequest()) {
+            <div class="confirm-details">
+              <div class="detail-row">
+                <span class="detail-label">User:</span>
+                <span class="detail-value">{{ confirmRequest()!.userName }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Product:</span>
+                <span class="detail-value">{{ confirmRequest()!.productName }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Points:</span>
+                <span class="detail-value">{{ formatPoints(confirmRequest()!.pointsCost || 0) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeConfirmModal()">
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn" 
+          [class]="getActionButtonClass(confirmAction()!)"
+          (click)="executeAction()">
+          {{ getActionLabel(confirmAction()!) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

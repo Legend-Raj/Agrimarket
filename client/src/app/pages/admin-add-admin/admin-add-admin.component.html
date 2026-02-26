@@ -1,0 +1,263 @@
+<div class="dashboard-wrapper">
+  <!-- Admin Header Component -->
+  <app-admin-header></app-admin-header>
+
+  <!-- ========================================
+       Main Content
+       ======================================== -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <section class="page-header">
+      <div class="page-header-content">
+        <a routerLink="/admin" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5"/>
+            <path d="M12 19l-7-7 7-7"/>
+          </svg>
+          <span>Back to Dashboard</span>
+        </a>
+        <h1 class="page-title">Create Admin User</h1>
+        <p class="page-subtitle">Add a new administrator to the AGDATA Rewards system.</p>
+      </div>
+    </section>
+
+    <!-- Create Admin Form Card -->
+    <section class="form-section">
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+          </div>
+          <div class="form-card-title-section">
+            <h2 class="form-card-title">Admin Details</h2>
+            <p class="form-card-description">Enter the information for the new administrator.</p>
+          </div>
+        </div>
+
+        <div class="form-card-body">
+          @if (successMessage()) {
+            <div class="alert alert-success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>{{ successMessage() }}</span>
+            </div>
+          }
+
+          @if (formErrors()['general']) {
+            <div class="alert alert-error">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>{{ formErrors()['general'] }}</span>
+            </div>
+          }
+
+          <form class="admin-form" (ngSubmit)="submitForm()">
+            <!-- Name Row -->
+            <div class="form-row three-col">
+              <div class="form-group">
+                <label for="firstName" class="form-label">First Name <span class="required">*</span></label>
+                <input 
+                  type="text" 
+                  id="firstName" 
+                  class="form-input"
+                  [class.error]="formErrors()['firstname']"
+                  [value]="adminForm().firstName"
+                  (input)="updateFormField('firstName', $any($event.target).value)"
+                  placeholder="Enter first name"
+                  autocomplete="given-name"
+                />
+                @if (formErrors()['firstname']) {
+                  <span class="form-error">{{ formErrors()['firstname'] }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="middleName" class="form-label">Middle Name</label>
+                <input 
+                  type="text" 
+                  id="middleName" 
+                  class="form-input"
+                  [value]="adminForm().middleName"
+                  (input)="updateFormField('middleName', $any($event.target).value)"
+                  placeholder="Optional"
+                  autocomplete="additional-name"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="lastName" class="form-label">Last Name <span class="required">*</span></label>
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  class="form-input"
+                  [class.error]="formErrors()['lastname']"
+                  [value]="adminForm().lastName"
+                  (input)="updateFormField('lastName', $any($event.target).value)"
+                  placeholder="Enter last name"
+                  autocomplete="family-name"
+                />
+                @if (formErrors()['lastname']) {
+                  <span class="form-error">{{ formErrors()['lastname'] }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Email and Employee ID Row -->
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  class="form-input"
+                  [class.error]="formErrors()['email']"
+                  [value]="adminForm().email"
+                  (input)="updateFormField('email', $any($event.target).value)"
+                  placeholder="admin@agdata.com"
+                  autocomplete="email"
+                />
+                @if (formErrors()['email']) {
+                  <span class="form-error">{{ formErrors()['email'] }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="employeeId" class="form-label">Employee ID <span class="required">*</span></label>
+                <input 
+                  type="text" 
+                  id="employeeId" 
+                  class="form-input"
+                  [class.error]="formErrors()['employeeid']"
+                  [value]="adminForm().employeeId"
+                  (input)="updateFormField('employeeId', $any($event.target).value)"
+                  placeholder="AGD-123"
+                  autocomplete="off"
+                />
+                @if (formErrors()['employeeid']) {
+                  <span class="form-error">{{ formErrors()['employeeid'] }}</span>
+                }
+                <span class="form-hint">Format: XXX-### (e.g., AGD-123)</span>
+              </div>
+            </div>
+
+            <!-- Password Row -->
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label for="password" class="form-label">Password <span class="required">*</span></label>
+                <div class="password-input-wrapper">
+                  <input 
+                    [type]="showPassword() ? 'text' : 'password'" 
+                    id="password" 
+                    class="form-input password-input"
+                    [class.error]="formErrors()['password']"
+                    [value]="adminForm().password"
+                    (input)="updateFormField('password', $any($event.target).value)"
+                    placeholder="Minimum 8 characters"
+                    autocomplete="new-password"
+                  />
+                  <button 
+                    type="button" 
+                    class="password-toggle"
+                    (click)="togglePasswordVisibility()"
+                    tabindex="-1">
+                    @if (showPassword()) {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </svg>
+                    } @else {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    }
+                  </button>
+                </div>
+                @if (formErrors()['password']) {
+                  <span class="form-error">{{ formErrors()['password'] }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirm Password <span class="required">*</span></label>
+                <div class="password-input-wrapper">
+                  <input 
+                    [type]="showConfirmPassword() ? 'text' : 'password'" 
+                    id="confirmPassword" 
+                    class="form-input password-input"
+                    [class.error]="formErrors()['confirmpassword']"
+                    [value]="adminForm().confirmPassword"
+                    (input)="updateFormField('confirmPassword', $any($event.target).value)"
+                    placeholder="Re-enter password"
+                    autocomplete="new-password"
+                  />
+                  <button 
+                    type="button" 
+                    class="password-toggle"
+                    (click)="toggleConfirmPasswordVisibility()"
+                    tabindex="-1">
+                    @if (showConfirmPassword()) {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </svg>
+                    } @else {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    }
+                  </button>
+                </div>
+                @if (formErrors()['confirmpassword']) {
+                  <span class="form-error">{{ formErrors()['confirmpassword'] }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button 
+                type="button" 
+                class="btn btn-secondary"
+                (click)="onCancel()"
+                [disabled]="isSubmitting()">
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="isSubmitting()">
+                @if (isSubmitting()) {
+                  <span class="spinner"></span>
+                  <span>Creating...</span>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="8.5" cy="7" r="4"/>
+                    <line x1="20" y1="8" x2="20" y2="14"/>
+                    <line x1="23" y1="11" x2="17" y2="11"/>
+                  </svg>
+                  <span>Create Admin</span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>

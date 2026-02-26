@@ -1,0 +1,139 @@
+<div class="dashboard-wrapper">
+  <!-- Retailer Navbar -->
+  <app-retailer-navbar></app-retailer-navbar>
+
+  <!-- Content Container with Sidebar -->
+  <div class="content-container">
+    <!-- Filter Sidebar -->
+    <app-filter-sidebar></app-filter-sidebar>
+
+    <!-- Main Content -->
+    <main class="main-content">
+    <!-- Welcome Banner -->
+    <section class="welcome-banner">
+      <div class="welcome-content">
+        <h1 class="welcome-title">{{ getGreeting() }}, {{ userFirstName() }}!</h1>
+        <p class="welcome-subtitle">Manage your bulk inventory, wholesale orders, and supplier connections.</p>
+      </div>
+    </section>
+
+    <!-- Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon orders-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Orders</span>
+          <span class="stat-value">{{ stats().totalOrders }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon pending-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Pending Orders</span>
+          <span class="stat-value">{{ stats().pendingOrders }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon revenue-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Revenue</span>
+          <span class="stat-value">{{ formatCurrency(stats().totalRevenue) }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card" [class.alert-card]="stats().lowStockItems > 0">
+        <div class="stat-icon stock-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Low Stock Items</span>
+          <span class="stat-value">{{ stats().lowStockItems }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Current Offers -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Current Offers</h2>
+        <a routerLink="/retailer/offers" class="view-all-link">View all</a>
+      </div>
+
+      <div class="offers-grid">
+        @for (offer of offers(); track offer.id) {
+          <div class="offer-card">
+            <div class="offer-badge">{{ offer.discountPercent }}% OFF</div>
+            <h3 class="offer-title">{{ offer.title }}</h3>
+            <p class="offer-description">{{ offer.description }}</p>
+            <span class="offer-validity">Valid until {{ offer.validUntil }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Featured Products</h2>
+        <a routerLink="/retailer/products" class="view-all-link">View all</a>
+      </div>
+
+      <div class="products-grid">
+        @for (product of products(); track product.id) {
+          <div class="product-card">
+            <div class="product-image">
+              <div class="product-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+            </div>
+            <div class="product-info">
+              <span class="product-category">{{ product.category }}</span>
+              <h4 class="product-name">{{ product.name }}</h4>
+              <p class="product-description">{{ product.description }}</p>
+              <div class="product-footer">
+                <span class="product-price">&#8377;{{ product.price.toLocaleString() }}</span>
+                <span class="product-unit">{{ product.unit }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  </main>
+
+  <app-footer></app-footer>
+
+  <!-- Loading Overlay -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="loading-spinner">
+        <svg viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="80 60"/>
+        </svg>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,155 @@
+<aside class="filter-sidebar">
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
+    <h3 class="sidebar-title">Filters</h3>
+    @if (getActiveFiltersCount() > 0) {
+      <button class="clear-btn" (click)="clearAllFilters()">Clear all</button>
+    }
+  </div>
+
+  <!-- Availability Toggle -->
+  <div class="filter-group availability-group">
+    <div class="availability-toggle">
+      <label class="toggle-label">
+        <input 
+          type="checkbox" 
+          class="toggle-checkbox"
+          [checked]="showOnlyAvailable()"
+          (change)="toggleAvailability()"
+        />
+        <span class="toggle-switch"></span>
+        <span class="toggle-text">Show only available</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Crops Section -->
+  <div class="filter-section">
+    <button 
+      class="section-header-btn"
+      [class.expanded]="getSectionById('crops')?.isExpanded"
+      (click)="toggleSection('crops')"
+    >
+      <span class="section-title">Crops</span>
+      <span class="toggle-icon">
+        @if (getSectionById('crops')?.isExpanded) {
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+        }
+      </span>
+    </button>
+
+    @if (getSectionById('crops')?.isExpanded) {
+      <div class="section-content">
+        <!-- Search Input -->
+        <div class="search-wrapper">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+          </svg>
+          <input 
+            type="text"
+            class="search-input"
+            placeholder="Search"
+            [value]="cropSearch()"
+            (input)="cropSearch.set($any($event.target).value)"
+          />
+        </div>
+
+        <!-- Options List with Scroll -->
+        <div class="options-list scrollable">
+          @for (crop of filteredCrops(); track crop.id) {
+            <label class="option-item">
+              <input 
+                type="checkbox" 
+                class="option-checkbox"
+                [checked]="crop.checked"
+                (change)="toggleCropOption(crop.id)"
+              />
+              <span class="option-checkmark"></span>
+              <span class="option-label">{{ crop.label }}</span>
+              @if (crop.count) {
+                <span class="option-count">({{ crop.count }})</span>
+              }
+            </label>
+          }
+          
+          @if (filteredCrops().length === 0) {
+            <div class="no-results">
+              <span>No crops found</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Manufacturer/Brand Section -->
+  <div class="filter-section">
+    <button 
+      class="section-header-btn"
+      [class.expanded]="getSectionById('manufacturer')?.isExpanded"
+      (click)="toggleSection('manufacturer')"
+    >
+      <span class="section-title">Manufacturer/Brand</span>
+      <span class="toggle-icon">
+        @if (getSectionById('manufacturer')?.isExpanded) {
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+        }
+      </span>
+    </button>
+
+    @if (getSectionById('manufacturer')?.isExpanded) {
+      <div class="section-content">
+        <!-- Search Input -->
+        <div class="search-wrapper">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+          </svg>
+          <input 
+            type="text"
+            class="search-input"
+            placeholder="Search"
+            [value]="manufacturerSearch()"
+            (input)="manufacturerSearch.set($any($event.target).value)"
+          />
+        </div>
+
+        <!-- Options List with Scroll -->
+        <div class="options-list scrollable">
+          @for (manufacturer of filteredManufacturers(); track manufacturer.id) {
+            <label class="option-item">
+              <input 
+                type="checkbox" 
+                class="option-checkbox"
+                [checked]="manufacturer.checked"
+                (change)="toggleManufacturerOption(manufacturer.id)"
+              />
+              <span class="option-checkmark"></span>
+              <span class="option-label">{{ manufacturer.label }}</span>
+              @if (manufacturer.count) {
+                <span class="option-count">({{ manufacturer.count }})</span>
+              }
+            </label>
+          }
+          
+          @if (filteredManufacturers().length === 0) {
+            <div class="no-results">
+              <span>No manufacturers found</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</aside>

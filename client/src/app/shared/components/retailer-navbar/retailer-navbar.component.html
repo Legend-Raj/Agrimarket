@@ -1,0 +1,274 @@
+<!-- =====================================================================
+     Retailer Navbar - Two-tier marketplace header
+     ===================================================================== -->
+<header class="navbar-wrapper">
+  <!-- ─── Top Bar ─── -->
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <!-- Brand -->
+      <a class="brand" (click)="navigateTo('/retailer')">
+        <img src="adata_white.png" alt="AGDATA" class="brand-logo-img" />
+      </a>
+
+      <!-- Search Bar (desktop) -->
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search wholesale products, brands..."
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+
+      <!-- Location/Delivery Selector -->
+      <div class="location-selector">
+        <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <div class="location-text">
+          <span class="location-label">Shop Location</span>
+          <span class="location-value">{{ selectedLocation() }}</span>
+        </div>
+        <svg class="location-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+
+      <!-- User Actions -->
+      <div class="user-actions">
+        <!-- Inventory -->
+        <button class="icon-btn" title="Inventory" (click)="navigateTo('/retailer/inventory')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+        </button>
+
+        <!-- Notifications -->
+        <button class="icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+
+        <!-- User -->
+        <div class="user-menu-wrapper">
+          <button class="user-btn" (click)="toggleUserDropdown($event)">
+            <span class="user-avatar">{{ userInitial() }}</span>
+            <div class="user-name-block">
+              <span class="user-name-desktop">{{ userName() }}</span>
+              <span class="user-role-label">Retailer</span>
+            </div>
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          @if (userDropdownOpen()) {
+            <div class="user-dropdown">
+              <div class="dropdown-header">
+                <span class="dropdown-name">{{ userName() }}</span>
+                <span class="dropdown-role">Retailer</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" (click)="navigateTo('/retailer/profile')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                My Profile
+              </a>
+              <a class="dropdown-item" (click)="navigateTo('/retailer/orders')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+                My Orders
+              </a>
+              <a class="dropdown-item" (click)="navigateTo('/retailer/change-password')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                Change Password
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item logout-item" (click)="onLogout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Sign Out
+              </a>
+            </div>
+          }
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="hamburger-btn" (click)="toggleMobileMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            @if (mobileMenuOpen()) {
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            } @else {
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            }
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Category Bar (Desktop) ─── -->
+  <nav class="category-bar">
+    <div class="category-bar-inner">
+      @for (cat of categories; track cat.label; let i = $index) {
+        <div
+          class="category-item"
+          [class.active]="activeMenuIndex() === i"
+          (mouseenter)="onCategoryMouseEnter(i)"
+          (mouseleave)="onCategoryMouseLeave()"
+          (click)="onCategoryClick(i, $event)"
+        >
+          <span class="category-label">{{ cat.label }}</span>
+          <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      }
+
+      <!-- Quick Links (right side) -->
+      <div class="quick-links">
+        <a class="quick-link" routerLink="/retailer/offers" routerLinkActive="active-link">Offers</a>
+        <a class="quick-link" routerLink="/retailer/orders" routerLinkActive="active-link">Orders</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── Mega Menu Dropdown ─── -->
+  @if (activeMenuIndex() !== null) {
+    <div
+      class="mega-menu-backdrop"
+      [class.pinned]="pinnedIndex() !== null"
+      (mouseenter)="onMegaMenuMouseEnter()"
+      (mouseleave)="onMegaMenuMouseLeave()"
+    >
+      <div class="mega-menu">
+        <div class="mega-menu-inner">
+          <!-- Category heading -->
+          <div class="mega-menu-header">
+            <h3 class="mega-menu-title">{{ categories[activeMenuIndex()!].label }}</h3>
+            <a class="mega-menu-view-all" (click)="navigateTo(categories[activeMenuIndex()!].route)">
+              View All →
+            </a>
+          </div>
+
+          <!-- Sub-categories grid -->
+          <div class="mega-menu-grid">
+            @for (sub of categories[activeMenuIndex()!].subCategories; track sub.heading) {
+              <div class="mega-menu-column">
+                <h4 class="sub-heading">{{ sub.heading }}</h4>
+                <ul class="sub-list">
+                  @for (item of sub.items; track item.name) {
+                    <li>
+                      <a class="sub-link" (click)="navigateTo(item.route)">{{ item.name }}</a>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ─── Mobile Menu Drawer ─── -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-overlay" (click)="toggleMobileMenu()"></div>
+    <div class="mobile-drawer">
+      <div class="mobile-header">
+        <span class="mobile-title">Menu</span>
+        <button class="mobile-close" (click)="toggleMobileMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile search -->
+      <div class="mobile-search">
+        <input
+          type="text"
+          placeholder="Search products..."
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          (keydown.enter)="onSearch(); toggleMobileMenu()"
+        />
+      </div>
+
+      <!-- Mobile categories -->
+      <div class="mobile-categories">
+        @for (cat of categories; track cat.label; let i = $index) {
+          <div class="mobile-category">
+            <button class="mobile-cat-btn" (click)="onCategoryClick(i, $event)">
+              {{ cat.label }}
+              <svg
+                class="mobile-cat-chevron"
+                [class.rotated]="pinnedIndex() === i"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+
+            @if (pinnedIndex() === i) {
+              <div class="mobile-subcats">
+                @for (sub of cat.subCategories; track sub.heading) {
+                  <div class="mobile-subgroup">
+                    <span class="mobile-sub-heading">{{ sub.heading }}</span>
+                    @for (item of sub.items; track item.name) {
+                      <a class="mobile-sub-link" (click)="navigateTo(item.route); toggleMobileMenu()">
+                        {{ item.name }}
+                      </a>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Mobile quick links -->
+      <div class="mobile-quick-links">
+        <a class="mobile-quick-link" (click)="navigateTo('/retailer/offers'); toggleMobileMenu()">Offers</a>
+        <a class="mobile-quick-link" (click)="navigateTo('/retailer/orders'); toggleMobileMenu()">Orders</a>
+        <a class="mobile-quick-link" (click)="navigateTo('/retailer/profile'); toggleMobileMenu()">My Profile</a>
+      </div>
+
+      <div class="mobile-footer">
+        <button class="mobile-logout-btn" (click)="onLogout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
+        </button>
+      </div>
+    </div>
+  }
+</header>

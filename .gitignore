@@ -1,0 +1,175 @@
+# =============================================================================
+# AGGRI MARKETPLACE - GITIGNORE
+# =============================================================================
+# This file specifies intentionally untracked files to ignore when using Git.
+# https://git-scm.com/docs/gitignore
+
+# =============================================================================
+# DEPENDENCIES
+# =============================================================================
+# Node.js dependencies - should be installed via npm install
+**/node_modules/
+**/npm-debug.log*
+**/yarn-error.log*
+**/package-lock.json.backup
+.pnpm-debug.log*
+
+# =============================================================================
+# BUILD OUTPUT
+# =============================================================================
+# Compiled output directories - generated during build process
+**/dist/
+**/tmp/
+**/out-tsc/
+**/bazel-out/
+**/build/
+**/out/
+
+# =============================================================================
+# ANGULAR SPECIFIC
+# =============================================================================
+# Angular CLI cache and build artifacts
+**/.angular/cache/
+.sass-cache/
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# =============================================================================
+# TESTING
+# =============================================================================
+# Test coverage reports
+**/coverage/
+/.nyc_output/
+
+# =============================================================================
+# ENVIRONMENT & SECRETS
+# =============================================================================
+# Environment files containing sensitive data
+# (Keep .env.example for documentation)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+# =============================================================================
+# IDE & EDITORS
+# =============================================================================
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+*.vsix
+
+# JetBrains IDEs (WebStorm, IntelliJ, etc.)
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Eclipse
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*~
+
+# =============================================================================
+# LOGS
+# =============================================================================
+logs
+*.log
+lerna-debug.log*
+.pnpm-debug.log*
+
+# =============================================================================
+# OS GENERATED FILES
+# =============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.nfs*
+
+# =============================================================================
+# MISC
+# =============================================================================
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.cache
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Parcel cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Storybook build outputs
+.out
+.storybook-out
+storybook-static
+
+# Temporary folders
+/tmp
+/temp
