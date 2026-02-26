@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { AiChatbotComponent } from '../../shared/components/ai-chatbot/ai-chatbot.component';
 
 /**
  * Manufacturer Dashboard Component
@@ -15,7 +16,7 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
 @Component({
   selector: 'app-manufacturer-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FooterComponent],
+  imports: [CommonModule, RouterLink, FooterComponent, AiChatbotComponent],
   templateUrl: './manufacturer-dashboard.component.html',
   styleUrl: './manufacturer-dashboard.component.css',
 })

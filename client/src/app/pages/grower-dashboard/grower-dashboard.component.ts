@@ -5,6 +5,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { GrowerNavbarComponent } from '../../shared/components/grower-navbar/grower-navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { FilterSidebarComponent } from '../../shared/components/filter-sidebar/filter-sidebar.component';
+import { AiChatbotComponent } from '../../shared/components/ai-chatbot/ai-chatbot.component';
 import { MOCK_PRODUCTS, MOCK_OFFERS, MockProduct, MockOffer } from '../../core/mock/mock-data';
 
 /**
@@ -19,7 +20,7 @@ import { MOCK_PRODUCTS, MOCK_OFFERS, MockProduct, MockOffer } from '../../core/m
 @Component({
   selector: 'app-grower-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, GrowerNavbarComponent, FooterComponent, FilterSidebarComponent],
+  imports: [CommonModule, RouterLink, GrowerNavbarComponent, FooterComponent, FilterSidebarComponent, AiChatbotComponent],
   templateUrl: './grower-dashboard.component.html',
   styleUrl: './grower-dashboard.component.css',
 })

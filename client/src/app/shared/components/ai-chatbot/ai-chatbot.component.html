@@ -1,0 +1,154 @@
+<!-- Floating Chat Button -->
+<button
+  class="chat-fab"
+  [class.open]="isOpen()"
+  (click)="toggleChat()"
+  aria-label="Open AI assistant chat">
+  <!-- Badge when closed and no conversation yet -->
+  @if (!isOpen() && !hasConversation()) {
+    <span class="fab-badge">1</span>
+  }
+  <!-- Robot icon (when closed) -->
+  <svg *ngIf="!isOpen()" class="fab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="11" width="18" height="10" rx="2"/>
+    <circle cx="9" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+    <circle cx="15" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+    <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+    <line x1="12" y1="4" x2="12" y2="2"/>
+    <circle cx="12" cy="2" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+  <!-- Close icon (when open) -->
+  <svg *ngIf="isOpen()" class="fab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+</button>
+
+<!-- Chat Panel -->
+@if (isOpen()) {
+  <div class="chat-panel" role="dialog" aria-label="AI Assistant Chat">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"/>
+            <circle cx="9" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+            <circle cx="15" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+          </svg>
+        </div>
+        <div class="chat-header-text">
+          <span class="chat-header-title">AgriMarket Assistant</span>
+          <span class="chat-header-status">
+            <span class="status-dot"></span>
+            Online — Ready to help
+          </span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <!-- Minimize / Close -->
+        <button class="chat-header-btn" (click)="closeChat()" aria-label="Close chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Welcome Card (shows when no conversation yet) -->
+    @if (!hasConversation()) {
+      <div class="welcome-card">
+        <span class="welcome-emoji">🌾</span>
+        <div class="welcome-text">
+          <h4 class="welcome-heading">Welcome to AgriMarket Support!</h4>
+          <p class="welcome-desc">Ask me about products, orders, deliveries, offers, or anything else. I'm here to help.</p>
+        </div>
+      </div>
+    }
+
+    <!-- Messages -->
+    <div class="chat-messages" #messagesContainer>
+      @for (msg of messages(); track msg.id) {
+        <div class="message-row" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'">
+          @if (msg.sender === 'bot') {
+            <div class="msg-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2"/>
+                <circle cx="9" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+                <circle cx="15" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+              </svg>
+            </div>
+          }
+          <div class="message-bubble">
+            <p class="message-text">{{ msg.text }}</p>
+            <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Typing indicator -->
+      @if (isTyping()) {
+        <div class="message-row bot">
+          <div class="msg-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"/>
+              <circle cx="9" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+              <circle cx="15" cy="16" r="1.25" fill="currentColor" stroke="none"/>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+            </svg>
+          </div>
+          <div class="message-bubble typing-bubble">
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Quick Suggestions (shown when no conversation yet) -->
+    @if (!hasConversation()) {
+      <div class="quick-suggestions">
+        <button class="suggestion-chip" (click)="userInput.set('What products do you have?'); sendMessage()">🌱 Browse Products</button>
+        <button class="suggestion-chip" (click)="userInput.set('Tell me about current offers'); sendMessage()">🏷️ Current Offers</button>
+        <button class="suggestion-chip" (click)="userInput.set('How do I track my order?'); sendMessage()">📦 Track Order</button>
+        <button class="suggestion-chip" (click)="userInput.set('I need help'); sendMessage()">💬 Get Help</button>
+        <button class="suggestion-chip" (click)="userInput.set('What are the delivery options?'); sendMessage()">🚚 Delivery Info</button>
+        <button class="suggestion-chip" (click)="userInput.set('How do I update my profile?'); sendMessage()">👤 My Account</button>
+      </div>
+    }
+
+    <!-- Input Area -->
+    <div class="chat-input-area">
+      <input
+        type="text"
+        class="chat-input"
+        placeholder="Type your message here..."
+        [ngModel]="userInput()"
+        (ngModelChange)="onInputChange($event)"
+        (keydown)="onKeyDown($event)"
+        autocomplete="off"
+      />
+      <button
+        class="send-btn"
+        [disabled]="!userInput().trim()"
+        (click)="sendMessage()"
+        aria-label="Send message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Powered-by footer -->
+    <div class="chat-footer">
+      <p class="chat-footer-text">Powered by <strong>AgriMarket AI</strong></p>
+    </div>
+  </div>
+}

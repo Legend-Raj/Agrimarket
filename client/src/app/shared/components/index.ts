@@ -6,3 +6,4 @@ export * from './admin-header/admin-header.component';
 export * from './grower-navbar/grower-navbar.component';
 export * from './retailer-navbar/retailer-navbar.component';
 export * from './filter-sidebar/filter-sidebar.component';
+export * from './ai-chatbot/ai-chatbot.component';
