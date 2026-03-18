@@ -9,66 +9,100 @@
 
     <!-- Main Content -->
     <main class="main-content">
-    <!-- Welcome Banner -->
-    <section class="welcome-banner">
-      <div class="welcome-content">
-        <h1 class="welcome-title">{{ getGreeting() }}, {{ userFirstName() }}!</h1>
-        <p class="welcome-subtitle">Explore products, check offers, and manage your farm supplies.</p>
-      </div>
-    </section>
+      <!-- Welcome Banner -->
+      <section class="welcome-banner">
+        <div class="welcome-content">
+          <h1 class="welcome-title">{{ getGreeting() }}, {{ userFirstName() }}!</h1>
+          <p class="welcome-subtitle">Explore products, check offers, and manage your farm supplies.</p>
+        </div>
+      </section>
 
-    <!-- Current Offers -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">Current Offers</h2>
-        <a routerLink="/grower/offers" class="view-all-link">View all</a>
-      </div>
+      <!-- Current Offers / Promotions -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">Current Offers</h2>
+          <a routerLink="/grower/offers" class="view-all-link">View all</a>
+        </div>
 
-      <div class="offers-grid">
-        @for (offer of offers(); track offer.id) {
-          <div class="offer-card">
-            <div class="offer-badge">{{ offer.discountPercent }}% OFF</div>
-            <h3 class="offer-title">{{ offer.title }}</h3>
-            <p class="offer-description">{{ offer.description }}</p>
-            <span class="offer-validity">Valid until {{ offer.validUntil }}</span>
+        @if (promotionsError()) {
+          <div class="empty-state">
+            <p class="empty-message">Unable to load offers. Please try again later.</p>
+          </div>
+        } @else if (!hasPromotions()) {
+          <div class="empty-state">
+            <p class="empty-message">No active offers at the moment. Check back soon!</p>
+          </div>
+        } @else {
+          <div class="offers-grid">
+            @for (promotion of promotions(); track promotion.id) {
+              <div class="offer-card">
+                <div class="offer-badge">{{ getDiscount(promotion) }}</div>
+                <h3 class="offer-title">{{ promotion.name || promotion.code }}</h3>
+                <p class="offer-description">{{ promotion.description }}</p>
+                <span class="offer-validity">{{ getValidity(promotion) }}</span>
+              </div>
+            }
           </div>
         }
-      </div>
-    </section>
+      </section>
 
-    <!-- Featured Products -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">Featured Products</h2>
-        <a routerLink="/grower/products" class="view-all-link">View all</a>
-      </div>
+      <!-- Featured Products -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">Featured Products</h2>
+          <a routerLink="/grower/products" class="view-all-link">View all</a>
+        </div>
 
-      <div class="products-grid">
-        @for (product of products(); track product.id) {
-          <div class="product-card">
-            <div class="product-image">
-              <div class="product-placeholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                  <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
-                  <line x1="12" y1="22.08" x2="12" y2="12"/>
-                </svg>
+        @if (productsError()) {
+          <div class="empty-state">
+            <p class="empty-message">Unable to load products. Please try again later.</p>
+            <button class="retry-btn" (click)="refreshProducts()">Retry</button>
+          </div>
+        } @else if (!hasProducts()) {
+          <div class="empty-state">
+            <p class="empty-message">No products available at the moment.</p>
+          </div>
+        } @else {
+          <div class="products-grid">
+            @for (product of products(); track product.id) {
+              <div class="product-card">
+                <div class="product-image">
+                  @if (product.imageUrl) {
+                    <img [src]="product.imageUrl" [alt]="product.name || 'Product image'" />
+                  } @else {
+                    <div class="product-placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                      </svg>
+                    </div>
+                  }
+                  @if (!checkStock(product)) {
+                    <div class="out-of-stock-badge">Out of Stock</div>
+                  }
+                </div>
+                <div class="product-info">
+                  <span class="product-category">{{ getCategoryName(product) }}</span>
+                  <h4 class="product-name">{{ product.name || 'Unnamed Product' }}</h4>
+                  <p class="product-description">{{ product.description || 'No description available' }}</p>
+                  <div class="product-footer">
+                    <span class="product-price">{{ formatPrice(product.price, product.currency) }}</span>
+                    @if (product.unit) {
+                      <span class="product-unit">/ {{ product.unit }}</span>
+                    }
+                  </div>
+                  <div class="product-seller">
+                    <span class="seller-label">By:</span>
+                    <span class="seller-name">{{ getSellerName(product) }}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="product-info">
-              <span class="product-category">{{ product.category }}</span>
-              <h4 class="product-name">{{ product.name }}</h4>
-              <p class="product-description">{{ product.description }}</p>
-              <div class="product-footer">
-                <span class="product-price">&#8377;{{ product.price.toLocaleString() }}</span>
-                <span class="product-unit">{{ product.unit }}</span>
-              </div>
-            </div>
+            }
           </div>
         }
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
   </div>
 
   <!-- Footer -->

@@ -7,14 +7,20 @@
     }
   </div>
 
+  @if (filterLoadError()) {
+    <div class="filter-error">
+      <p>Unable to load filters.</p>
+    </div>
+  }
+
   <!-- Availability Toggle -->
   <div class="filter-group availability-group">
     <div class="availability-toggle">
       <label class="toggle-label">
-        <input 
-          type="checkbox" 
+        <input
+          type="checkbox"
           class="toggle-checkbox"
-          [checked]="showOnlyAvailable()"
+          [checked]="filterState.showOnlyAvailable()"
           (change)="toggleAvailability()"
         />
         <span class="toggle-switch"></span>
@@ -23,16 +29,59 @@
     </div>
   </div>
 
-  <!-- Crops Section -->
+  <!-- Price Range Filter -->
+  @if (filterOptions()?.priceRange) {
+    <div class="filter-group price-range-group">
+      <div class="price-range-header">
+        <span class="price-range-label">Price Range</span>
+        @if (filterState.hasPriceFilter()) {
+          <button class="price-clear-btn" (click)="clearPriceFilters()">Clear</button>
+        }
+      </div>
+      <div class="price-range-inputs">
+        <div class="price-input-wrapper">
+          <span class="price-symbol">$</span>
+          <input
+            type="number"
+            class="price-input"
+            placeholder="{{ getMinPricePlaceholder() }}"
+            [value]="filterState.minPrice()"
+            (input)="onMinPriceChange($event)"
+            min="0"
+          />
+        </div>
+        <span class="price-separator">to</span>
+        <div class="price-input-wrapper">
+          <span class="price-symbol">$</span>
+          <input
+            type="number"
+            class="price-input"
+            placeholder="{{ getMaxPricePlaceholder() }}"
+            [value]="filterState.maxPrice()"
+            (input)="onMaxPriceChange($event)"
+            min="0"
+          />
+        </div>
+      </div>
+      <div class="price-range-hint">
+        <span>{{ getPriceRangeText() }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Categories Section -->
   <div class="filter-section">
-    <button 
+    <button
       class="section-header-btn"
-      [class.expanded]="getSectionById('crops')?.isExpanded"
-      (click)="toggleSection('crops')"
+      [class.expanded]="getSectionById('categories')?.isExpanded"
+      (click)="toggleSection('categories')"
     >
-      <span class="section-title">Crops</span>
+      <span class="section-title">Categories</span>
+      @if (filterOptions()?.categories?.length) {
+        <span class="section-count">({{ filterOptions()!.categories!.length }})</span>
+      }
       <span class="toggle-icon">
-        @if (getSectionById('crops')?.isExpanded) {
+        @if (getSectionById('categories')?.isExpanded) {
           <svg viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/>
           </svg>
@@ -44,60 +93,69 @@
       </span>
     </button>
 
-    @if (getSectionById('crops')?.isExpanded) {
+    @if (getSectionById('categories')?.isExpanded) {
       <div class="section-content">
-        <!-- Search Input -->
-        <div class="search-wrapper">
-          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-          </svg>
-          <input 
-            type="text"
-            class="search-input"
-            placeholder="Search"
-            [value]="cropSearch()"
-            (input)="cropSearch.set($any($event.target).value)"
-          />
-        </div>
+        @if (isLoadingFilters()) {
+          <div class="filter-loading">
+            <span>Loading...</span>
+          </div>
+        } @else {
+          <!-- Search Input -->
+          <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+            </svg>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search categories"
+              [value]="categorySearch()"
+              (input)="onCategorySearchChange($any($event.target).value)"
+            />
+          </div>
 
-        <!-- Options List with Scroll -->
-        <div class="options-list scrollable">
-          @for (crop of filteredCrops(); track crop.id) {
-            <label class="option-item">
-              <input 
-                type="checkbox" 
-                class="option-checkbox"
-                [checked]="crop.checked"
-                (change)="toggleCropOption(crop.id)"
-              />
-              <span class="option-checkmark"></span>
-              <span class="option-label">{{ crop.label }}</span>
-              @if (crop.count) {
-                <span class="option-count">({{ crop.count }})</span>
-              }
-            </label>
-          }
-          
-          @if (filteredCrops().length === 0) {
-            <div class="no-results">
-              <span>No crops found</span>
-            </div>
-          }
-        </div>
+          <!-- Options List -->
+          <div class="options-list scrollable">
+            @for (category of filteredCategories(); track category.id) {
+              <label class="option-item">
+                <input
+                  type="checkbox"
+                  class="option-checkbox"
+                  [checked]="isCategorySelected(category.id)"
+                  (change)="toggleCategory(category.id)"
+                />
+                <span class="option-checkmark"></span>
+                <span class="option-label" [title]="getCategoryName(category)">{{ getCategoryName(category) }}</span>
+                @if (category.productCount) {
+                  <span class="option-count">({{ category.productCount }})</span>
+                }
+              </label>
+            }
+
+            @if (filteredCategories().length === 0) {
+              <div class="no-results">
+                <span>No categories found</span>
+              </div>
+            }
+          </div>
+        }
       </div>
     }
   </div>
 
-  <!-- Manufacturer/Brand Section -->
+  <!-- Manufacturers/Sellers Section -->
   <div class="filter-section">
-    <button 
+    <button
       class="section-header-btn"
-      [class.expanded]="getSectionById('manufacturer')?.isExpanded"
-      (click)="toggleSection('manufacturer')"
+      [class.expanded]="getSectionById('manufacturers')?.isExpanded"
+      (click)="toggleSection('manufacturers')"
     >
-      <span class="section-title">Manufacturer/Brand</span>
+      <span class="section-title">Manufacturers</span>
+      @if (filterOptions()?.sellers?.length) {
+        <span class="section-count">({{ filterOptions()!.sellers!.length }})</span>
+      }
       <span class="toggle-icon">
-        @if (getSectionById('manufacturer')?.isExpanded) {
+        @if (getSectionById('manufacturers')?.isExpanded) {
           <svg viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/>
           </svg>
@@ -109,46 +167,52 @@
       </span>
     </button>
 
-    @if (getSectionById('manufacturer')?.isExpanded) {
+    @if (getSectionById('manufacturers')?.isExpanded) {
       <div class="section-content">
-        <!-- Search Input -->
-        <div class="search-wrapper">
-          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-          </svg>
-          <input 
-            type="text"
-            class="search-input"
-            placeholder="Search"
-            [value]="manufacturerSearch()"
-            (input)="manufacturerSearch.set($any($event.target).value)"
-          />
-        </div>
+        @if (isLoadingFilters()) {
+          <div class="filter-loading">
+            <span>Loading...</span>
+          </div>
+        } @else {
+          <!-- Search Input -->
+          <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+            </svg>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search manufacturers"
+              [value]="manufacturerSearch()"
+              (input)="onManufacturerSearchChange($any($event.target).value)"
+            />
+          </div>
 
-        <!-- Options List with Scroll -->
-        <div class="options-list scrollable">
-          @for (manufacturer of filteredManufacturers(); track manufacturer.id) {
-            <label class="option-item">
-              <input 
-                type="checkbox" 
-                class="option-checkbox"
-                [checked]="manufacturer.checked"
-                (change)="toggleManufacturerOption(manufacturer.id)"
-              />
-              <span class="option-checkmark"></span>
-              <span class="option-label">{{ manufacturer.label }}</span>
-              @if (manufacturer.count) {
-                <span class="option-count">({{ manufacturer.count }})</span>
-              }
-            </label>
-          }
-          
-          @if (filteredManufacturers().length === 0) {
-            <div class="no-results">
-              <span>No manufacturers found</span>
-            </div>
-          }
-        </div>
+          <!-- Options List -->
+          <div class="options-list scrollable">
+            @for (seller of filteredSellers(); track seller.id) {
+              <label class="option-item">
+                <input
+                  type="checkbox"
+                  class="option-checkbox"
+                  [checked]="isSellerSelected(seller.id)"
+                  (change)="toggleManufacturer(seller.id)"
+                />
+                <span class="option-checkmark"></span>
+                <span class="option-label" [title]="getSellerName(seller)">{{ getSellerName(seller) }}</span>
+                @if (seller.productCount) {
+                  <span class="option-count">({{ seller.productCount }})</span>
+                }
+              </label>
+            }
+
+            @if (filteredSellers().length === 0) {
+              <div class="no-results">
+                <span>No manufacturers found</span>
+              </div>
+            }
+          </div>
+        }
       </div>
     }
   </div>

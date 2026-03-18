@@ -98,13 +98,26 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
  */
 function isAccountInactiveError(error: HttpErrorResponse): boolean {
   if (!error.error) return false;
-  
-  const message = (error.error.message || error.error.error || '').toLowerCase();
+
+  // Handle different error response formats
+  let message = '';
+
+  if (typeof error.error === 'string') {
+    // Error is a plain string
+    message = error.error;
+  } else if (typeof error.error === 'object') {
+    // Error is an object - safely extract message
+    message = error.error?.message || error.error?.error || '';
+  }
+
+  if (typeof message !== 'string') return false;
+
+  const lowerMessage = message.toLowerCase();
   return (
-    message.includes('inactive') ||
-    message.includes('deactivated') ||
-    message.includes('account is inactive') ||
-    message.includes('user account deactivated')
+    lowerMessage.includes('inactive') ||
+    lowerMessage.includes('deactivated') ||
+    lowerMessage.includes('account is inactive') ||
+    lowerMessage.includes('user account deactivated')
   );
 }
 

@@ -23,22 +23,22 @@ export const DEMO_CREDENTIALS: DemoCredential[] = [
   {
     role: 'Grower',
     label: 'Farmer / Grower',
-    email: 'grower@agrimarket.com',
-    password: 'Grower@123',
+    email: 'grower@test.com',
+    password: 'Test123',
     description: 'Browse products, view offers, manage orders',
   },
   {
     role: 'Retailer',
     label: 'Retailer',
-    email: 'retailer@agrimarket.com',
-    password: 'Retailer@123',
+    email: 'retailer@test.com',
+    password: 'Test123',
     description: 'Manage storefront, inventory, and sales',
   },
   {
     role: 'Manufacturer',
     label: 'Manufacturer',
-    email: 'manufacturer@agrimarket.com',
-    password: 'Manufacturer@123',
+    email: 'manufacturer@test.com',
+    password: 'Test123',
     description: 'Manage products, distribution, and analytics',
   },
 ];
@@ -48,24 +48,24 @@ export const DEMO_CREDENTIALS: DemoCredential[] = [
 // ============================================
 
 const MOCK_USERS: Record<string, UserInfo> = {
-  'grower@agrimarket.com': {
-    id: 'usr-grower-001',
-    email: 'grower@agrimarket.com',
-    name: 'Rajesh Kumar',
+  'grower@test.com': {
+    id: '11111111-1111-1111-1111-111111111111',
+    email: 'grower@test.com',
+    name: 'John Farmer',
     role: 'Grower',
     isActive: true,
   },
-  'retailer@agrimarket.com': {
-    id: 'usr-retailer-001',
-    email: 'retailer@agrimarket.com',
-    name: 'Priya Sharma',
+  'retailer@test.com': {
+    id: '22222222-2222-2222-2222-222222222222',
+    email: 'retailer@test.com',
+    name: 'Jane Store',
     role: 'Retailer',
     isActive: true,
   },
-  'manufacturer@agrimarket.com': {
-    id: 'usr-mfg-001',
-    email: 'manufacturer@agrimarket.com',
-    name: 'Anil Patel',
+  'manufacturer@test.com': {
+    id: '33333333-3333-3333-3333-333333333333',
+    email: 'manufacturer@test.com',
+    name: 'Bob Manufacturing',
     role: 'Manufacturer',
     isActive: true,
   },

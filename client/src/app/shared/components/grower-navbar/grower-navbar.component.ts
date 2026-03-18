@@ -5,15 +5,14 @@ import {
   computed,
   HostListener,
   ElementRef,
+  ChangeDetectorRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import {
-  GROWER_NAV_CATEGORIES,
-  NavCategory,
-} from '../../../core/mock/mock-data';
+import { FilterStateService } from '../../../core/services/filter-state.service';
+import { GROWER_NAV_CATEGORIES } from '../../../core/mock/mock-data';
 
 /**
  * Grower Navbar Component
@@ -40,6 +39,8 @@ export class GrowerNavbarComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly elRef = inject(ElementRef);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly filterState = inject(FilterStateService);
 
   readonly categories = GROWER_NAV_CATEGORIES;
 
@@ -130,6 +131,7 @@ export class GrowerNavbarComponent {
       this.pinnedIndex.set(null);
       this.hoveredIndex.set(null);
       this.userDropdownOpen.set(false);
+      this.cdr.markForCheck();
     }
   }
 
@@ -139,6 +141,7 @@ export class GrowerNavbarComponent {
     this.hoveredIndex.set(null);
     this.userDropdownOpen.set(false);
     this.mobileMenuOpen.set(false);
+    this.cdr.markForCheck();
   }
 
   // ────────────────────────────────────────────
@@ -148,6 +151,7 @@ export class GrowerNavbarComponent {
   toggleUserDropdown(event: Event): void {
     event.stopPropagation();
     this.userDropdownOpen.update((v) => !v);
+    this.cdr.markForCheck();
   }
 
   navigateTo(route: string): void {
@@ -155,6 +159,22 @@ export class GrowerNavbarComponent {
     this.pinnedIndex.set(null);
     this.hoveredIndex.set(null);
     this.mobileMenuOpen.set(false);
+    this.userDropdownOpen.set(false);
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Navigate to grower dashboard and filter by search term from mega-menu items.
+   * Since sub-category routes don't exist yet, this provides a usable fallback
+   * that searches for the item name in the product catalog.
+   */
+  navigateAndSearch(itemName: string): void {
+    this.filterState.setSearch(itemName);
+    this.router.navigate(['/grower']);
+    this.pinnedIndex.set(null);
+    this.hoveredIndex.set(null);
+    this.mobileMenuOpen.set(false);
+    this.cdr.markForCheck();
   }
 
   onLogout(): void {
@@ -170,5 +190,6 @@ export class GrowerNavbarComponent {
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update((v) => !v);
+    this.cdr.markForCheck();
   }
 }

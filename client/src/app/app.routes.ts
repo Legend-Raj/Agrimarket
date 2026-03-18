@@ -6,7 +6,7 @@ import { authGuard, roleGuard, guestGuard } from './core/guards/auth.guard';
  *
  * Route structure:
  * - /             -> Redirects to /login (guestGuard will redirect authenticated users)
- * - /login        -> Login page (guest only)
+ * - /login        -> Login/Signup page (guest only)
  * - /grower/**    -> Grower dashboard & sub-routes (Grower role only)
  * - /retailer/**  -> Retailer dashboard & sub-routes (Retailer role only)
  * - /manufacturer/** -> Manufacturer dashboard & sub-routes (Manufacturer role only)
@@ -20,11 +20,11 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  //  Authentication routes (guest only) 
+  // Authentication routes (guest only)
   {
     path: 'login',
     loadComponent: () =>
-      import('./pages/login/login.component').then((m) => m.LoginComponent),
+      import('./pages/auth/auth.component').then((m) => m.AuthComponent),
     canActivate: [guestGuard],
     title: 'Sign In - AgriMarket',
   },

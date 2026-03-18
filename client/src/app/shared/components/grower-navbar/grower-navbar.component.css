@@ -272,7 +272,7 @@
   border-radius: var(--nav-radius);
   box-shadow: var(--nav-shadow-lg);
   overflow: hidden;
-  z-index: 200;
+  z-index: 1100;
   animation: dropdownFadeIn 150ms ease;
 }
 

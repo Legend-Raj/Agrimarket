@@ -86,7 +86,9 @@ export class DashboardService {
    */
   getProducts(onlyActive: boolean = true): Observable<Product[]> {
     const params = onlyActive ? '?onlyActive=true' : '?onlyActive=false';
-    return this.http.get<Product[]>(`${this.API_URL}/products${params}`);
+    return this.http.get<{ data: Product[]; total: number; page: number; limit: number; totalPages: number }>(`${this.API_URL}/products${params}`).pipe(
+      map(response => response.data)
+    );
   }
 
   /**
@@ -224,6 +226,8 @@ export class DashboardService {
    */
   getAllProducts(onlyActive: boolean = false): Observable<Product[]> {
     const params = `?onlyActive=${onlyActive}`;
-    return this.http.get<Product[]>(`${this.API_URL}/products${params}`);
+    return this.http.get<{ data: Product[]; total: number; page: number; limit: number; totalPages: number }>(`${this.API_URL}/products${params}`).pipe(
+      map(response => response.data)
+    );
   }
 }

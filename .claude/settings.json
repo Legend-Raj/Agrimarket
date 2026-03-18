@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/praj1/.claude/plans/**)",
+      "Bash(npm --version)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(powershell -Command \"Get-ItemProperty -Path ''HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Microsoft SQL Server\\\\MSSQL16.SQLEXPRESS02\\\\MSSQLServer\\\\SuperSocketNetLib\\\\Tcp'' -Name Enabled -ErrorAction SilentlyContinue\")",
+      "Bash(powershell -Command \"Get-ItemProperty -Path ''HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Microsoft SQL Server\\\\MSSQL16.SQLEXPRESS02\\\\MSSQLServer\\\\SuperSocketNetLib\\\\Tcp'' -ErrorAction SilentlyContinue | Select-Object Enabled, TcpPort, TcpDynamicPorts\")",
+      "Bash(powershell -Command \"Get-Content \"\"$env:ProgramFiles\\\\Microsoft SQL Server\\\\MSSQL16.SQLEXPRESS02\\\\MSSQL\\\\Log\\\\ERRORLOG\"\" -Tail 30 | Select-String -Pattern ''listening''\")",
+      "Bash(powershell -Command \"& { $path = ''HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Microsoft SQL Server''; if \\(Test-Path $path\\) { Get-ChildItem $path -Recurse | Where-Object { $_Name -like ''*Tcp*'' } | Select-Object -First 10 } }\")",
+      "Bash(sqlcmd -S localhost -E -Q \"SELECT @@VERSION\")",
+      "Bash(sqlcmd -S localhostSQLEXPRESS02 -E -Q \"SELECT @@VERSION\")",
+      "Bash(sqlcmd -S 127.0.0.1SQLEXPRESS02 -E -Q \"SELECT @@VERSION\")",
+      "Bash(sqlcmd -S 127.0.0.1 -E -Q \"SELECT @@VERSION\" -C)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"c:\\\\Users\\\\praj1\\\\Downloads\\\\frontend\\\\backend\\\\scripts\\\\enable-tcp.ps1\")",
+      "Bash(powershell -Command \"Get-ChildItem ''HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Microsoft SQL Server'' -Recurse -ErrorAction SilentlyContinue | Where-Object { $_Name -like ''*InstanceName*'' -or $_Name -like ''*SQLEXPRESS*'' } | Select-Object -First 20\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"c:\\\\Users\\\\praj1\\\\Downloads\\\\frontend\\\\backend\\\\scripts\\\\find-sql.ps1\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"c:\\\\Users\\\\praj1\\\\Downloads\\\\frontend\\\\backend\\\\scripts\\\\find-tcp.ps1\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"c:\\\\Users\\\\praj1\\\\Downloads\\\\frontend\\\\backend\\\\scripts\\\\enable-tcp2.ps1\")",
+      "Bash(sqlcmd -S 127.0.0.1,1433 -E -C)",
+      "Bash(powershell -Command \"Get-NetTCPConnection -State Listen -LocalPort 1433 -ErrorAction SilentlyContinue\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -State Listen | Where-Object { $_LocalPort -like ''*SQL*'' -or $_LocalPort -ge 1433 -and $_LocalPort -le 1434 }\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -State Listen | Select-Object LocalPort, LocalAddress\")",
+      "Bash(powershell -Command \"Get-Content -Path \\(Get-ChildItem ''C:\\\\Program Files\\\\Microsoft SQL Server\\\\MSSQL17.SQLEXPRESS02\\\\MSSQL\\\\Log\\\\ERRORLOG'' | Select-Object -Last 1\\).FullName -Tail 30\")",
+      "Bash(cmd /c \"reg add \"\"HKLM\\\\SOFTWARE\\\\Microsoft\\\\Microsoft SQL Server\\\\MSSQL17.SQLEXPRESS02\\\\MSSQLServer\\\\SuperSocketNetLib\\\\Tcp\\\\IP1\"\" /v TcpPort /t REG_SZ /d 1433 /f\")",
+      "Bash(cmd /c \"reg add \"\"HKLM\\\\SOFTWARE\\\\Microsoft\\\\Microsoft SQL Server\\\\MSSQL17.SQLEXPRESS02\\\\MSSQLServer\\\\SuperSocketNetLib\\\\Tcp\\\\IPALL\"\" /v TcpPort /t REG_SZ /d 1433 /f\")",
+      "Bash(cmd /c \"reg add \"\"HKLM\\\\SOFTWARE\\\\Microsoft\\\\Microsoft SQL Server\\\\MSSQL17.SQLEXPRESS02\\\\MSSQLServer\\\\SuperSocketNetLib\\\\Tcp\\\\IPALL\"\" /v TcpDynamicPorts /t REG_SZ /d \"\"\"\" /f\")",
+      "Bash(net stop:*)",
+      "Bash(net start:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"c:\\\\Users\\\\praj1\\\\Downloads\\\\frontend\\\\backend\\\\scripts\\\\restart-sql.ps1\")"
+    ]
+  }
+}

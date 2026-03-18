@@ -9,6 +9,14 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role?: 'Grower' | 'Retailer' | 'Manufacturer';
+}
+
 export interface RefreshTokenRequest {
   refreshToken: string;
 }

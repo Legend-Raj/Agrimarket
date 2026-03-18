@@ -1,19 +1,14 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProductService } from '../../../core/services/product.service';
+import { FilterStateService } from '../../../core/services/filter-state.service';
+import { FilterOptions } from '../../../core/models/product.models';
 
 interface FilterSection {
   id: string;
   title: string;
   isExpanded: boolean;
-  hasSearch?: boolean;
-}
-
-interface FilterOption {
-  id: string;
-  label: string;
-  checked: boolean;
-  count?: number;
 }
 
 @Component({
@@ -23,124 +18,162 @@ interface FilterOption {
   templateUrl: './filter-sidebar.component.html',
   styleUrls: ['./filter-sidebar.component.css']
 })
-export class FilterSidebarComponent {
-  // Availability toggle
-  showOnlyAvailable = signal(true);
+export class FilterSidebarComponent implements OnInit {
+  private readonly productService = inject(ProductService);
+  readonly filterState = inject(FilterStateService);
 
-  // Search queries
-  cropSearch = signal('');
-  manufacturerSearch = signal('');
+  // Dynamic filter options loaded from backend
+  readonly filterOptions = signal<FilterOptions | null>(null);
+  readonly isLoadingFilters = signal(true);
+  readonly filterLoadError = signal(false);
 
-  // Filter sections
-  sections = signal<FilterSection[]>([
-    { id: 'crops', title: 'Crops', isExpanded: false, hasSearch: true },
-    { id: 'manufacturer', title: 'Manufacturer/Brand', isExpanded: false, hasSearch: true }
+  // Section expansion state
+  readonly sections = signal<FilterSection[]>([
+    { id: 'categories', title: 'Categories', isExpanded: false },
+    { id: 'manufacturers', title: 'Manufacturers', isExpanded: false }
   ]);
 
-  // Crop options
-  cropOptions = signal<FilterOption[]>([
-    { id: 'wheat', label: 'Wheat', checked: false, count: 145 },
-    { id: 'rice', label: 'Rice', checked: false, count: 128 },
-    { id: 'corn', label: 'Corn', checked: false, count: 97 },
-    { id: 'soybean', label: 'Soybean', checked: false, count: 83 },
-    { id: 'cotton', label: 'Cotton', checked: false, count: 76 },
-    { id: 'sugarcane', label: 'Sugarcane', checked: false, count: 54 }
-  ]);
+  // Search inputs for filtering the list views
+  readonly categorySearch = signal('');
+  readonly manufacturerSearch = signal('');
 
-  // Manufacturer options
-  manufacturerOptions = signal<FilterOption[]>([
-    { id: 'various', label: 'various manufacturers', checked: false, count: 234 },
-    { id: 'sharda', label: 'Sharda USA LLC', checked: false, count: 89 },
-    { id: 'adama', label: 'ADAMA', checked: false, count: 76 },
-    { id: 'innvictis', label: 'Innvictis Crop Care, LLC', checked: false, count: 64 },
-    { id: 'agromarketing', label: 'Agromarketing Company, Inc.', checked: false, count: 52 },
-    { id: 'redeagle', label: 'RedEagle International, LLC', checked: false, count: 48 },
-    { id: 'bayer', label: 'Bayer CropScience', checked: false, count: 91 },
-    { id: 'syngenta', label: 'Syngenta', checked: false, count: 87 },
-    { id: 'corteva', label: 'Corteva Agriscience', checked: false, count: 82 },
-    { id: 'basf', label: 'BASF', checked: false, count: 74 }
-  ]);
+  ngOnInit(): void {
+    this.loadFilterOptions();
+  }
 
-  // Filtered crops based on search
-  filteredCrops = computed(() => {
-    const search = this.cropSearch().toLowerCase().trim();
-    if (!search) return this.cropOptions();
-    
-    return this.cropOptions().filter(option => 
-      option.label.toLowerCase().includes(search)
-    );
-  });
+  private loadFilterOptions(): void {
+    this.filterLoadError.set(false);
+    this.productService.getFilterOptions().subscribe({
+      next: (options) => {
+        this.filterOptions.set(options);
+        this.isLoadingFilters.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load filter options:', err);
+        this.filterLoadError.set(true);
+        this.isLoadingFilters.set(false);
+      }
+    });
+  }
 
-  // Filtered manufacturers based on search
-  filteredManufacturers = computed(() => {
+  // Filter categories by search text
+  filteredCategories() {
+    const options = this.filterOptions()?.categories ?? [];
+    const search = this.categorySearch().toLowerCase().trim();
+    if (!search) return options;
+    return options.filter(c => c.name.toLowerCase().includes(search));
+  }
+
+  // Filter sellers by search text
+  filteredSellers() {
+    const sellers = this.filterOptions()?.sellers ?? [];
     const search = this.manufacturerSearch().toLowerCase().trim();
-    if (!search) return this.manufacturerOptions();
-    
-    return this.manufacturerOptions().filter(option => 
-      option.label.toLowerCase().includes(search)
-    );
-  });
-
-  // Toggle section expansion
-  toggleSection(sectionId: string) {
-    this.sections.update(sections => 
-      sections.map(section => 
-        section.id === sectionId 
-          ? { ...section, isExpanded: !section.isExpanded }
-          : section
-      )
-    );
+    if (!search) return sellers;
+    return sellers.filter(s => {
+      const name = s.companyName ?? '';
+      return name.toLowerCase().includes(search);
+    });
   }
 
-  // Toggle availability
-  toggleAvailability() {
-    this.showOnlyAvailable.update(value => !value);
+  // Get display name for a seller (companyName or "Unknown")
+  getSellerName(seller: { id: string; companyName: string | null }): string {
+    return seller.companyName || 'Independent Seller';
   }
 
-  // Toggle crop option
-  toggleCropOption(optionId: string) {
-    this.cropOptions.update(options =>
-      options.map(option =>
-        option.id === optionId
-          ? { ...option, checked: !option.checked }
-          : option
-      )
+  // Get display name for a category
+  getCategoryName(category: { name: string }): string {
+    return category.name || 'Uncategorized';
+  }
+
+  // Get price range display text
+  getPriceRangeText(): string {
+    const range = this.filterOptions()?.priceRange;
+    if (!range) return '';
+    return `$${range.min.toFixed(0)} - $${range.max.toFixed(0)}`;
+  }
+
+  // Section toggle
+  toggleSection(sectionId: string): void {
+    this.sections.update(sections =>
+      sections.map(s => s.id === sectionId ? { ...s, isExpanded: !s.isExpanded } : s)
     );
   }
 
-  // Toggle manufacturer option
-  toggleManufacturerOption(optionId: string) {
-    this.manufacturerOptions.update(options =>
-      options.map(option =>
-        option.id === optionId
-          ? { ...option, checked: !option.checked }
-          : option
-      )
-    );
+  getSectionById(id: string): FilterSection | undefined {
+    return this.sections().find(s => s.id === id);
   }
 
-  // Get section state
-  getSectionById(id: string) {
-    return this.sections().find(section => section.id === id);
+  // Category selection
+  toggleCategory(categoryId: string): void {
+    console.log('[FilterSidebar] toggleCategory called:', categoryId);
+    this.filterState.toggleCategory(categoryId);
+  }
+
+  isCategorySelected(categoryId: string): boolean {
+    return this.filterState.isCategorySelected(categoryId);
+  }
+
+  // Seller/manufacturer selection
+  toggleManufacturer(sellerId: string): void {
+    console.log('[FilterSidebar] toggleManufacturer called:', sellerId);
+    this.filterState.toggleSeller(sellerId);
+  }
+
+  isSellerSelected(sellerId: string): boolean {
+    return this.filterState.isSellerSelected(sellerId);
+  }
+
+  // Availability toggle
+  toggleAvailability(): void {
+    this.filterState.toggleAvailability();
+  }
+
+  // Search input handlers
+  onCategorySearchChange(value: string): void {
+    this.categorySearch.set(value);
+  }
+
+  onManufacturerSearchChange(value: string): void {
+    this.manufacturerSearch.set(value);
+  }
+
+  // Price range handlers
+  onMinPriceChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    const price = value ? parseFloat(value) : undefined;
+    this.filterState.setMinPrice(price);
+  }
+
+  onMaxPriceChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    const price = value ? parseFloat(value) : undefined;
+    this.filterState.setMaxPrice(price);
+  }
+
+  // Get min price placeholder
+  getMinPricePlaceholder(): string {
+    const range = this.filterOptions()?.priceRange;
+    return range ? range.min.toFixed(0) : '0';
+  }
+
+  // Get max price placeholder
+  getMaxPricePlaceholder(): string {
+    const range = this.filterOptions()?.priceRange;
+    return range ? range.max.toFixed(0) : '1000';
+  }
+
+  // Clear price filters
+  clearPriceFilters(): void {
+    this.filterState.setPriceRange(undefined, undefined);
   }
 
   // Clear all filters
-  clearAllFilters() {
-    this.showOnlyAvailable.set(false);
-    this.cropSearch.set('');
-    this.manufacturerSearch.set('');
-    this.cropOptions.update(options =>
-      options.map(option => ({ ...option, checked: false }))
-    );
-    this.manufacturerOptions.update(options =>
-      options.map(option => ({ ...option, checked: false }))
-    );
+  clearAllFilters(): void {
+    this.filterState.clearAll();
   }
 
-  // Get active filters count
-  getActiveFiltersCount() {
-    const cropCount = this.cropOptions().filter(o => o.checked).length;
-    const manufacturerCount = this.manufacturerOptions().filter(o => o.checked).length;
-    return cropCount + manufacturerCount + (this.showOnlyAvailable() ? 1 : 0);
+  // Active filters count
+  getActiveFiltersCount(): number {
+    return this.filterState.activeFilterCount();
   }
 }

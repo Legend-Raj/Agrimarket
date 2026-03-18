@@ -182,7 +182,7 @@
                 <ul class="sub-list">
                   @for (item of sub.items; track item.name) {
                     <li>
-                      <a class="sub-link" (click)="navigateTo(item.route)">{{ item.name }}</a>
+                      <a class="sub-link" (click)="navigateAndSearch(item.name)">{{ item.name }}</a>
                     </li>
                   }
                 </ul>
@@ -240,7 +240,7 @@
                   <div class="mobile-subgroup">
                     <span class="mobile-sub-heading">{{ sub.heading }}</span>
                     @for (item of sub.items; track item.name) {
-                      <a class="mobile-sub-link" (click)="navigateTo(item.route); toggleMobileMenu()">
+                      <a class="mobile-sub-link" (click)="navigateAndSearch(item.name); toggleMobileMenu()">
                         {{ item.name }}
                       </a>
                     }

@@ -36,7 +36,7 @@
   position: fixed;
   bottom: 28px;
   right: 28px;
-  z-index: 9999;
+  z-index: 10001;
   font-family: var(--chat-font);
 }
 

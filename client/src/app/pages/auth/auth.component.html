@@ -1,0 +1,435 @@
+<div class="auth-container">
+  <!-- Background pattern -->
+  <div class="background-pattern"></div>
+
+  <!-- Left panel - Branding -->
+  <div class="branding-panel">
+    <div class="brand-logo-area">
+      <img src="adata_white.png" alt="AGDATA" class="brand-logo-img" />
+    </div>
+
+    <div class="branding-content">
+      <h2 class="branding-title">Online Marketplace</h2>
+      <p class="branding-subtitle">
+        Connecting Growers, Retailers, and Manufacturers on a single platform.
+      </p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Browse crop protection, seeds & more</span>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Direct manufacturer-to-farmer pricing</span>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>Real-time inventory & offers</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="branding-footer">
+      <p>&copy; {{ currentYear }} AGDATA. All rights reserved.</p>
+    </div>
+  </div>
+
+  <!-- Right panel - Auth form -->
+  <div class="form-panel">
+    <div class="form-container">
+      <div class="form-header">
+        <!-- Logo -->
+        <div class="form-logo-container">
+          <img src="agdata_logo.svg" alt="AGDATA" class="form-logo-img" />
+        </div>
+
+        <!-- Mode Toggle Tabs -->
+        <div class="mode-tabs">
+          <button
+            class="mode-tab"
+            [class.active]="mode() === 'login'"
+            (click)="switchMode('login')"
+            type="button">
+            Sign In
+          </button>
+          <button
+            class="mode-tab"
+            [class.active]="mode() === 'signup'"
+            (click)="switchMode('signup')"
+            type="button">
+            Create Account
+          </button>
+          <div class="mode-indicator" [class.signup]="mode() === 'signup'"></div>
+        </div>
+      </div>
+
+      <!-- Redirect message -->
+      @if (redirectMessage()) {
+        <div class="alert alert-warning" role="alert">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <span>{{ redirectMessage() }}</span>
+        </div>
+      }
+
+      <!-- Server error -->
+      @if (serverError()) {
+        <div class="alert alert-error" role="alert">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>{{ serverError() }}</span>
+        </div>
+      }
+
+      <!-- ============================================ -->
+      <!-- LOGIN FORM -->
+      <!-- ============================================ -->
+      @if (mode() === 'login') {
+        <form #loginForm="ngForm" (ngSubmit)="onLoginSubmit(loginForm)" class="auth-form" novalidate>
+          <!-- Email field -->
+          <div class="form-group">
+            <label for="email" class="form-label">
+              Email Address <span class="required">*</span>
+            </label>
+            <div class="input-wrapper"
+              [class.has-error]="touched()['email'] && validationErrors()['email']"
+              [class.has-success]="touched()['email'] && isEmailValid()">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <input
+                type="email" id="email" name="email" class="form-input"
+                placeholder="you@example.com"
+                [value]="email()"
+                (input)="onEmailChange($any($event.target).value)"
+                (blur)="onEmailBlur()"
+                [attr.aria-invalid]="touched()['email'] && validationErrors()['email'] ? 'true' : null"
+                autocomplete="email" required />
+              @if (touched()['email'] && isEmailValid()) {
+                <svg class="validation-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              }
+            </div>
+            @if (touched()['email'] && validationErrors()['email']) {
+              <p class="error-message">{{ validationErrors()['email'] }}</p>
+            }
+          </div>
+
+          <!-- Password field -->
+          <div class="form-group">
+            <label for="password" class="form-label">
+              Password <span class="required">*</span>
+            </label>
+            <div class="input-wrapper"
+              [class.has-error]="touched()['password'] && validationErrors()['password']"
+              [class.has-success]="touched()['password'] && isPasswordValid()">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                id="password" name="password" class="form-input"
+                placeholder="Enter your password"
+                [value]="password()"
+                (input)="onPasswordChange($any($event.target).value)"
+                (blur)="onPasswordBlur()"
+                [attr.aria-invalid]="touched()['password'] && validationErrors()['password'] ? 'true' : null"
+                autocomplete="current-password" required />
+              <button type="button" class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+                @if (showPassword()) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (touched()['password'] && validationErrors()['password']) {
+              <p class="error-message">{{ validationErrors()['password'] }}</p>
+            }
+          </div>
+
+          <!-- Forgot password link -->
+          <div class="form-actions-row">
+            <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <!-- Submit button -->
+          <button type="submit" class="submit-button"
+            [disabled]="isLoading() || !isLoginFormValid()"
+            [class.loading]="isLoading()">
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              <span>Signing in...</span>
+            } @else {
+              <span>Sign In</span>
+              <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            }
+          </button>
+        </form>
+
+        <!-- Help text -->
+        <div class="help-section">
+          <p class="help-text">
+            Don't have an account?
+            <button type="button" class="link-button" (click)="switchMode('signup')">Sign up</button>
+          </p>
+        </div>
+      }
+
+      <!-- ============================================ -->
+      <!-- SIGNUP FORM -->
+      <!-- ============================================ -->
+      @if (mode() === 'signup') {
+        <form #signupForm="ngForm" (ngSubmit)="onSignupSubmit(signupForm)" class="auth-form" novalidate>
+          <!-- Name fields -->
+          <div class="name-fields">
+            <!-- First Name -->
+            <div class="form-group">
+              <label for="firstName" class="form-label">
+                First Name <span class="required">*</span>
+              </label>
+              <div class="input-wrapper"
+                [class.has-error]="touched()['firstName'] && validationErrors()['firstName']"
+                [class.has-success]="touched()['firstName'] && isFirstNameValid()">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0a4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <input
+                  type="text" id="firstName" name="firstName" class="form-input"
+                  placeholder="John"
+                  [value]="firstName()"
+                  (input)="onFirstNameChange($any($event.target).value)"
+                  (blur)="onFirstNameBlur()"
+                  [attr.aria-invalid]="touched()['firstName'] && validationErrors()['firstName'] ? 'true' : null"
+                  autocomplete="given-name" required />
+              </div>
+              @if (touched()['firstName'] && validationErrors()['firstName']) {
+                <p class="error-message">{{ validationErrors()['firstName'] }}</p>
+              }
+            </div>
+
+            <!-- Last Name -->
+            <div class="form-group">
+              <label for="lastName" class="form-label">
+                Last Name <span class="required">*</span>
+              </label>
+              <div class="input-wrapper"
+                [class.has-error]="touched()['lastName'] && validationErrors()['lastName']"
+                [class.has-success]="touched()['lastName'] && isLastNameValid()">
+                <input
+                  type="text" id="lastName" name="lastName" class="form-input"
+                  placeholder="Doe"
+                  [value]="lastName()"
+                  (input)="onLastNameChange($any($event.target).value)"
+                  (blur)="onLastNameBlur()"
+                  [attr.aria-invalid]="touched()['lastName'] && validationErrors()['lastName'] ? 'true' : null"
+                  autocomplete="family-name" required />
+              </div>
+              @if (touched()['lastName'] && validationErrors()['lastName']) {
+                <p class="error-message">{{ validationErrors()['lastName'] }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Email field -->
+          <div class="form-group">
+            <label for="signupEmail" class="form-label">
+              Email Address <span class="required">*</span>
+            </label>
+            <div class="input-wrapper"
+              [class.has-error]="touched()['signupEmail'] && validationErrors()['signupEmail']"
+              [class.has-success]="touched()['signupEmail'] && isSignupEmailValid()">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <input
+                type="email" id="signupEmail" name="signupEmail" class="form-input"
+                placeholder="you@example.com"
+                [value]="signupEmail()"
+                (input)="onSignupEmailChange($any($event.target).value)"
+                (blur)="onSignupEmailBlur()"
+                [attr.aria-invalid]="touched()['signupEmail'] && validationErrors()['signupEmail'] ? 'true' : null"
+                autocomplete="email" required />
+              @if (touched()['signupEmail'] && isSignupEmailValid()) {
+                <svg class="validation-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              }
+            </div>
+            @if (touched()['signupEmail'] && validationErrors()['signupEmail']) {
+              <p class="error-message">{{ validationErrors()['signupEmail'] }}</p>
+            }
+          </div>
+
+          <!-- Password field -->
+          <div class="form-group">
+            <label for="signupPassword" class="form-label">
+              Password <span class="required">*</span>
+            </label>
+            <div class="input-wrapper"
+              [class.has-error]="touched()['signupPassword'] && validationErrors()['signupPassword']"
+              [class.has-success]="touched()['signupPassword'] && isSignupPasswordValid()">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <input
+                [type]="showSignupPassword() ? 'text' : 'password'"
+                id="signupPassword" name="signupPassword" class="form-input"
+                placeholder="Create a password"
+                [value]="signupPassword()"
+                (input)="onSignupPasswordChange($any($event.target).value)"
+                (blur)="onSignupPasswordBlur()"
+                [attr.aria-invalid]="touched()['signupPassword'] && validationErrors()['signupPassword'] ? 'true' : null"
+                autocomplete="new-password" required />
+              <button type="button" class="password-toggle"
+                (click)="toggleSignupPasswordVisibility()"
+                [attr.aria-label]="showSignupPassword() ? 'Hide password' : 'Show password'">
+                @if (showSignupPassword()) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                }
+              </button>
+            </div>
+            <!-- Password strength indicator -->
+            @if (signupPassword()) {
+              <div class="password-strength">
+                <div class="strength-bar">
+                  <div class="strength-fill"
+                    [style.width.%]="(passwordStrength().level / 6) * 100"
+                    [style.background-color]="passwordStrength().color">
+                  </div>
+                </div>
+                <span class="strength-text" [style.color]="passwordStrength().color">
+                  {{ passwordStrength().text }}
+                </span>
+              </div>
+            }
+            @if (touched()['signupPassword'] && validationErrors()['signupPassword']) {
+              <p class="error-message">{{ validationErrors()['signupPassword'] }}</p>
+            }
+          </div>
+
+          <!-- Confirm Password field -->
+          <div class="form-group">
+            <label for="signupConfirmPassword" class="form-label">
+              Confirm Password <span class="required">*</span>
+            </label>
+            <div class="input-wrapper"
+              [class.has-error]="touched()['signupConfirmPassword'] && validationErrors()['signupConfirmPassword']"
+              [class.has-success]="touched()['signupConfirmPassword'] && isConfirmPasswordValid()">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <input
+                [type]="showSignupPassword() ? 'text' : 'password'"
+                id="signupConfirmPassword" name="signupConfirmPassword" class="form-input"
+                placeholder="Confirm your password"
+                [value]="signupConfirmPassword()"
+                (input)="onSignupConfirmPasswordChange($any($event.target).value)"
+                (blur)="onSignupConfirmPasswordBlur()"
+                [attr.aria-invalid]="touched()['signupConfirmPassword'] && validationErrors()['signupConfirmPassword'] ? 'true' : null"
+                autocomplete="new-password" required />
+              @if (touched()['signupConfirmPassword'] && isConfirmPasswordValid()) {
+                <svg class="validation-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              }
+            </div>
+            @if (touched()['signupConfirmPassword'] && validationErrors()['signupConfirmPassword']) {
+              <p class="error-message">{{ validationErrors()['signupConfirmPassword'] }}</p>
+            }
+          </div>
+
+          <!-- Role selection -->
+          <div class="form-group">
+            <label class="form-label">
+              I am a <span class="required">*</span>
+            </label>
+            <div class="role-selector">
+              @for (role of roles; track role.value) {
+                <button type="button"
+                  class="role-option"
+                  [class.selected]="selectedRole() === role.value"
+                  (click)="selectRole(role.value)">
+                  <span class="role-label">{{ role.label }}</span>
+                  <span class="role-desc">{{ role.description }}</span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Submit button -->
+          <button type="submit" class="submit-button"
+            [disabled]="isLoading() || !isSignupFormValid()"
+            [class.loading]="isLoading()">
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              <span>Creating account...</span>
+            } @else {
+              <span>Create Account</span>
+              <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            }
+          </button>
+        </form>
+
+        <!-- Help text -->
+        <div class="help-section">
+          <p class="help-text">
+            Already have an account?
+            <button type="button" class="link-button" (click)="switchMode('login')">Sign in</button>
+          </p>
+        </div>
+      }
+
+      <!-- Marketplace info (below form, visible on mobile) -->
+      <div class="marketplace-info-mobile">
+        <p class="marketplace-tagline">Online Marketplace for Agriculture</p>
+        <p class="marketplace-desc">Connecting Growers, Retailers, and Manufacturers.</p>
+      </div>
+    </div>
+  </div>
+</div>

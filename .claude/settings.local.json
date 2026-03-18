@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find c:/Users/praj1/Downloads/frontend/client/src -type f -name *.ts -o -name *.html -o -name *.css)",
+      "Bash(cd:*)",
+      "Bash(taskkill /F /IM node.exe)"
+    ]
+  }
+}

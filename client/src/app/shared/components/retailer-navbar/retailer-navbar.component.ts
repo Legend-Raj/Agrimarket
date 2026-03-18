@@ -10,6 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { FilterStateService } from '../../../core/services/filter-state.service';
 import {
   GROWER_NAV_CATEGORIES,
   NavCategory,
@@ -32,6 +33,7 @@ export class RetailerNavbarComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly elRef = inject(ElementRef);
+  private readonly filterState = inject(FilterStateService);
 
   readonly categories = GROWER_NAV_CATEGORIES;
 
@@ -114,6 +116,14 @@ export class RetailerNavbarComponent {
 
   navigateTo(route: string): void {
     this.router.navigate([route]);
+    this.pinnedIndex.set(null);
+    this.hoveredIndex.set(null);
+    this.mobileMenuOpen.set(false);
+  }
+
+  navigateAndSearch(itemName: string): void {
+    this.filterState.setSearch(itemName);
+    this.router.navigate(['/retailer']);
     this.pinnedIndex.set(null);
     this.hoveredIndex.set(null);
     this.mobileMenuOpen.set(false);

@@ -5,6 +5,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { RetailerNavbarComponent } from '../../shared/components/retailer-navbar/retailer-navbar.component';
 import { FilterSidebarComponent } from '../../shared/components/filter-sidebar/filter-sidebar.component';
+import { AiChatbotComponent } from '../../shared/components/ai-chatbot/ai-chatbot.component';
 
 /**
  * Retailer Dashboard Component
@@ -17,7 +18,7 @@ import { FilterSidebarComponent } from '../../shared/components/filter-sidebar/f
 @Component({
   selector: 'app-retailer-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FooterComponent, RetailerNavbarComponent, FilterSidebarComponent],
+  imports: [CommonModule, RouterLink, FooterComponent, RetailerNavbarComponent, FilterSidebarComponent, AiChatbotComponent],
   templateUrl: './retailer-dashboard.component.html',
   styleUrl: './retailer-dashboard.component.css',
 })

@@ -180,3 +180,14 @@ storybook-static
 # The docs folder contains the built app for GitHub Pages hosting
 # DO NOT ignore docs folder - it's required for GitHub Pages
 # !docs/  <-- Keep this commented to include docs in version control
+PROJECT_PLAN.md
+Book1.xlsx
+prompt.txt
+backend/scripts/restart-sql.ps1
+backend/scripts/start-sql.ps1
+backend/scripts/seed.ts
+backend/scripts/find-tcp.ps1
+backend/scripts/find-sql.ps1
+backend/scripts/enable-tcp2.ps1
+backend/scripts/enable-tcp.ps1
+client/agent.md

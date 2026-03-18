@@ -330,6 +330,132 @@
   font-size: 0.875rem;
 }
 
+/* Section Count Badge */
+.section-count {
+  font-size: 0.8125rem;
+  color: #A1A1AA;
+  font-weight: 400;
+  margin-left: 0.25rem;
+}
+
+/* Price Range Filter */
+.price-range-group {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.price-range-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.price-range-header .price-range-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #71717A;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.price-clear-btn {
+  background: none;
+  border: none;
+  color: #DC2626;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 150ms ease;
+}
+
+.price-clear-btn:hover {
+  background: #FEF2F2;
+}
+
+.price-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.price-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.price-symbol {
+  position: absolute;
+  left: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #71717A;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.price-input {
+  width: 100%;
+  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  background: #F4F4F5;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #18181B;
+  transition: all 150ms ease;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.price-input::-webkit-outer-spin-button,
+.price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.price-input::placeholder {
+  color: #A1A1AA;
+}
+
+.price-input:focus {
+  background: white;
+  border-color: #2D6A4F;
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+}
+
+.price-separator {
+  font-size: 0.8125rem;
+  color: #71717A;
+  flex-shrink: 0;
+}
+
+.price-range-hint {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #A1A1AA;
+  text-align: center;
+}
+
+/* Filter Loading */
+.filter-loading {
+  padding: 1rem 1.25rem;
+  color: #A1A1AA;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Filter Error */
+.filter-error {
+  padding: 1rem 1.25rem;
+  color: #DC2626;
+  font-size: 0.875rem;
+  background: #FEF2F2;
+  margin: 0.5rem;
+  border-radius: 6px;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .filter-sidebar {

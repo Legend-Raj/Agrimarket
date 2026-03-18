@@ -17,6 +17,7 @@ import {
   ResetPasswordResponse,
   ChangePasswordRequest,
   ChangePasswordResponse,
+  RegisterRequest,
   ROLE_ROUTE_MAP,
 } from '../models';
 import { getMockLoginResponse, getMockCurrentUser } from '../mock/mock-data';
@@ -101,6 +102,41 @@ export class AuthService {
         tap((response) => this.handleLoginSuccess(response)),
         map((response) => response.user),
         catchError((error) => this.handleAuthError(error)),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  // ============================================
+  // Register
+  // ============================================
+
+  register(data: RegisterRequest): Observable<UserInfo> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    if (environment.useMockApi) {
+      // Mock registration - return a mock user
+      const mockUser: UserInfo = {
+        id: 'mock-user-' + Date.now(),
+        email: data.email,
+        name: `${data.firstName} ${data.lastName}`,
+        role: data.role || 'Grower',
+        isActive: true,
+      };
+      this._isLoading.set(false);
+      return of(mockUser);
+    }
+
+    return this.http
+      .post<LoginResponse>(`${this.API_URL}/auth/register`, data)
+      .pipe(
+        tap((response) => this.handleLoginSuccess(response)),
+        map((response) => response.user),
+        catchError((error) => {
+          const errMsg = error.error?.message || 'Registration failed. Please try again.';
+          this._error.set(errMsg);
+          return throwError(() => new Error(errMsg));
+        }),
         finalize(() => this._isLoading.set(false))
       );
   }
